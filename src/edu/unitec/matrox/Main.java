@@ -1,14 +1,15 @@
-
 package edu.unitec.matrox;
 
-/**
- *
- * @author Edilson Gonzalez
- */
+import java.io.*;
+   
 public class Main {
-    
-    public static void main(String[] args) {
-    
-    }
-    
+  static public void main(String argv[]) {    
+	try {
+    		Lexer scanner = new Lexer(new FileReader("./src/SomeFile.txt"));
+	    	scanner.yylex();
+	} catch (Exception e) {}
+        
+        
+  }
 }
+
