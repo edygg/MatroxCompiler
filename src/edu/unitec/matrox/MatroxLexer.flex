@@ -1,3 +1,5 @@
+package edu.unitec.matrox;
+
 import java_cup.runtime.*;
 
 %%
@@ -7,7 +9,6 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
-%standalone
 
 %{
   StringBuffer string = new StringBuffer();
@@ -21,13 +22,13 @@ import java_cup.runtime.*;
 %}
 
 
-Variable = _[A-Za-z0-9]+ | "$"[A-Za-z0-9]+
+Variable = [_$A-Za-z][_a-zA-z0-9]*
 Integer = [0-9]+
-Decimal = [0-9]+ | ([0-9])+"."([0-9])*
+Decimal = [0-9]*[\.][0-9]+
 
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
-WhiteSpace     = {LineTerminator} | [ \t\f] 
+WhiteSpace     = {LineTerminator} | [\s\t\f] 
 
 Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 TraditionalComment   = "/#" [^#] ~"#/" | "/#" "#"+ "/"
@@ -40,50 +41,50 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
 
 <YYINITIAL> {
 	
-    "integer"               { return new symbol(sym.INTEGER);}
-    "character"             { return new symbol(sym.CHAR);}
-    "boolean"               { return new symbol(sym.BOOLEAN);}
-    "giveback"              { return new symbol(sym.RETURN);}
-    "if" 	            { return new symbol(sym.IF); }
-    "else"                  { return new symbol(sym.ELSE); }
-    "while"                 { return new symbol(sym.WHILE); }
-    "do"                    { return new symbol(sym.DO); }
-    "print"                 { return new symbol(sym.WRITE); }
-    "getvalue"              { return new symbol(sym.READ); } // Or Scan
-    "stop"                  { return new symbol(sym.BREAK); }
-    "switch"                { return new symbol(sym.SWITCH); }
-    "option"                { return new symbol(sym.CASE); }
-    "end"                   { return new symbol(sym.END); }
+    "integer"               { return symbol(sym.INTEGER);   }
+    "character"             { return symbol(sym.CHAR);      }
+    "boolean"               { return symbol(sym.BOOLEAN);   }
+    "giveback"              { return symbol(sym.RETURN);    }
+    "if" 	            { return symbol(sym.IF);        }
+    "else"                  { return symbol(sym.ELSE);      }
+    "while"                 { return symbol(sym.WHILE);     }
+    "do"                    { return symbol(sym.DO);        }
+    "print"                 { return symbol(sym.WRITE);     }
+    "getvalue"              { return symbol(sym.READ);      }
+    "stop"                  { return symbol(sym.BREAK);     }
+    "switch"                { return symbol(sym.SWITCH);    }
+    "option"                { return symbol(sym.CASE);      }
+    "end"                   { return symbol(sym.END);       }
 
-    ","                     { return new symbol(sym.COMMA); }
+    ","                     { return symbol(sym.COMMA);     }
 
-    "+"                     { return new symbol(sym.ADD); }
-    "-"                     { return new symbol(sym.MIN); }
-    "*"                     { return new symbol(sym.MUL); }
-    "/"                     { return new symbol(sym.DIV); }
-    "("                     { return new symbol(sym.LPAR); }
-    ")"                     { return new symbol(sym.RPAR); }
-    "["                     { return new symbol(sym.LRBACK); }
-    "]"                     { return new symbol(sym.RBACK); }
-    "{"                     { return new symbol(sym.LBRACE); }
-    "}"                     { return new symbol(sym.RBRACE); }
+    "+"                     { return symbol(sym.ADD);       }
+    "-"                     { return symbol(sym.MIN);       }
+    "*"                     { return symbol(sym.MUL);       }
+    "/"                     { return symbol(sym.DIV);       }
+    "("                     { return symbol(sym.LPAR);      }
+    ")"                     { return symbol(sym.RPAR);      }
+    "["                     { return symbol(sym.LRBACK);    }
+    "]"                     { return symbol(sym.RBACK);     }
+    "{"                     { return symbol(sym.LBRACE);    }
+    "}"                     { return symbol(sym.RBRACE);    }
 
 
-    ">"                     { return new symbol(sym.GREATER); }
-    "<"                     { return new symbol(sym.LESS); }
-    "<>"                    { return new symbol(sym.NEQ); }
-    "=="                    { return new symbol(sym.EQU); }
+    ">"                     { return symbol(sym.GREATER);   }
+    "<"                     { return symbol(sym.LESS);      }
+    "<>"                    { return symbol(sym.NEQ);       }
+    "=="                    { return symbol(sym.EQU);       }
 
-    "!"                     { return new symbol(sym.NOT); }
-    "="                     { return new symbol(sym.ASSIGN); }
-    "OR"                    { return new symbol(sym.OR); } 
-    "AND"                   { return new symbol(sym.AND); }
+    "!"                     { return symbol(sym.NOT);       }
+    "="                     { return symbol(sym.ASSIGN);    }
+    "or"                    { return symbol(sym.OR);        } 
+    "and"                   { return symbol(sym.AND);       }
    
  
-   {Variable}               { return new symbol(sym.IDENTIFIER, yytext());    }
-   {Integer}                { return new symbol(sym.NUMBER, new Integer(Integer.parseInt(yytext()))); }
-   {Comment}               { yyline += countLines(yytext()); } 
-   {WhiteSpace} {}
+   {Variable}               { return symbol(sym.IDENTIFIER, yytext());                              }
+   {Integer}                { return symbol(sym.NUMBER, new Integer(Integer.parseInt(yytext())));   }
+   {Comment}                { yyline += countLines(yytext());                                           } 
+   {WhiteSpace}             {  /* ignore */                                                             }
 
 }
 

@@ -1,15 +1,15 @@
 package edu.unitec.matrox;
-
-import java.io.*;
    
 public class Main {
-  static public void main(String argv[]) {    
-	try {
-    		Lexer scanner = new Lexer(new FileReader("./src/SomeFile.txt"));
-	    	scanner.yylex();
-	} catch (Exception e) {}
-        
-        
+  static public void main(String args[]) {    
+      /* Errors */
+      if (args.length != 1) {
+          System.err.println("No input file.");
+      }
+      if (!args[0].endsWith(".mtx")) {
+          System.err.println("Invalid file extension.");
+      }
+      /* End Errors */
   }
 }
 
