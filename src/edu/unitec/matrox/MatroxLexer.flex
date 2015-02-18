@@ -11,8 +11,6 @@ import java_cup.runtime.*;
 %column
 
 %{
-  StringBuffer string = new StringBuffer();
-
   private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
   }
@@ -20,6 +18,10 @@ import java_cup.runtime.*;
     return new Symbol(type, yyline, yycolumn, value);
   }
 %}
+
+%eofval{ 
+    return symbol(sym.EOF);
+%eofval}
 
 
 Variable = [_$A-Za-z][_a-zA-z0-9]*
@@ -44,47 +46,55 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
     "integer"               { return symbol(sym.INTEGER);   }
     "character"             { return symbol(sym.CHAR);      }
     "boolean"               { return symbol(sym.BOOLEAN);   }
-    "giveback"              { return symbol(sym.RETURN);    }
+    "number"                { return symbol(sym.DOUBLE);    }
+    "string"                { return symbol(sym.STRING);    }
+
     "if" 	            { return symbol(sym.IF);        }
     "else"                  { return symbol(sym.ELSE);      }
     "while"                 { return symbol(sym.WHILE);     }
-    "do"                    { return symbol(sym.DO);        }
-    "print"                 { return symbol(sym.WRITE);     }
-    "getvalue"              { return symbol(sym.READ);      }
-    "stop"                  { return symbol(sym.BREAK);     }
+    "for"                   { return symbol(sym.FOR);       }
     "switch"                { return symbol(sym.SWITCH);    }
     "option"                { return symbol(sym.CASE);      }
+    "stop"                  { return symbol(sym.BREAK);     }
     "end"                   { return symbol(sym.END);       }
 
+    "function"              { return symbol(sym.FUNCTION);  }
+    "giveback"              { return symbol(sym.RETURN);    }
+    
+    "print"                 { return symbol(sym.WRITE);     }
+    "getvalue"              { return symbol(sym.READ);      }
+    
     ","                     { return symbol(sym.COMMA);     }
 
     "+"                     { return symbol(sym.ADD);       }
     "-"                     { return symbol(sym.MIN);       }
     "*"                     { return symbol(sym.MUL);       }
     "/"                     { return symbol(sym.DIV);       }
+    
     "("                     { return symbol(sym.LPAR);      }
     ")"                     { return symbol(sym.RPAR);      }
-    "["                     { return symbol(sym.LRBACK);    }
-    "]"                     { return symbol(sym.RBACK);     }
-    "{"                     { return symbol(sym.LBRACE);    }
-    "}"                     { return symbol(sym.RBRACE);    }
+    "["                     { return symbol(sym.LBRACK);    }
+    "]"                     { return symbol(sym.RBRACK);     }
 
-
+    ">="                    { return symbol(sym.GREATEREQ); }
+    "<="                    { return symbol(sym.LESSEQ);    }
     ">"                     { return symbol(sym.GREATER);   }
     "<"                     { return symbol(sym.LESS);      }
     "<>"                    { return symbol(sym.NEQ);       }
-    "=="                    { return symbol(sym.EQU);       }
+    "="                     { return symbol(sym.EQU);       }
 
-    "!"                     { return symbol(sym.NOT);       }
-    "="                     { return symbol(sym.ASSIGN);    }
+    "not"                   { return symbol(sym.NOT);       }
     "or"                    { return symbol(sym.OR);        } 
     "and"                   { return symbol(sym.AND);       }
+
+    "->"                    { return symbol(sym.ASSIGN);    }
    
  
-   {Variable}               { return symbol(sym.IDENTIFIER, yytext());                              }
-   {Integer}                { return symbol(sym.NUMBER, new Integer(Integer.parseInt(yytext())));   }
-   {Comment}                { yyline += countLines(yytext());                                           } 
-   {WhiteSpace}             {  /* ignore */                                                             }
+    {Variable}              { return symbol(sym.IDENTIFIER, yytext());                                   }
+    {Integer}               { return symbol(sym.INTNUMBER, new Integer(Integer.parseInt(yytext())));     }
+    {Decimal}               { return symbol(sym.DOUBLENUMBER, new Double(Double.parseDouble(yytext()))); }
+    {Comment}               {  /* ignore */                                                              } 
+    {WhiteSpace}            {  /* ignore */                                                              }
 
 }
 

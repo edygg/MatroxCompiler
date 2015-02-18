@@ -1,0 +1,55 @@
+
+package edu.unitec.matrox;
+
+import java_cup.runtime.*;
+
+parser code {:
+    public Parser(java.io.Reader input) {
+        super(new Lexer(input));
+    }
+:}
+
+/* Types */
+terminal INTEGER, CHAR, BOOLEAN, DOUBLE, STRING;
+
+/* Flow control structures */
+terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, BREAK, END;
+
+/* Functions */
+terminal FUNCTION, RETURN;
+
+/* I/O */
+terminal WRITE, READ;
+
+/* Comma symbol */
+terminal COMMA;
+
+/* Arithmetic operators */
+terminal ADD, MIN, MUL, DIV;
+
+/* Grouping symbols */
+terminal LPAR, RPAR, LBRACK, RBRACK;
+
+/* Relationship operators */
+terminal GREATEREQ, LESSEQ, GREATER, LESS, NEQ, EQU;
+
+/* Logic operators */
+terminal NOT, OR, AND;
+
+/* Assignment operator */
+terminal ASSIGN;
+
+/* Values */
+terminal String IDENTIFIER;
+terminal Integer INTNUMBER;
+terminal Double DOUBLENUMBER;
+
+/* Non terminals */
+non terminal exp;
+
+/* Precedences */
+precedence left ADD, MIN;
+precedence left MUL, DIV;
+
+exp ::= ADD         {: System.out.print("Hola"); :}
+;
