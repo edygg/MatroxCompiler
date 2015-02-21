@@ -24,19 +24,22 @@ import java_cup.runtime.*;
 %eofval}
 
 
-Variable = [_$A-Za-z][_a-zA-z0-9]*
+Variable = [_$a-zA-Z][a-zA-Z0-9_]*
 Integer = [0-9]+
 Decimal = [0-9]*[\.][0-9]+
 
-LineTerminator = \r|\n|\r\n
-InputCharacter = [^\r\n]
-WhiteSpace     = {LineTerminator} | [\s\t\f] 
+LineTerminator      = \r|\n|\r\n
+InputCharacter      = [^\r\n]
+WhiteSpace          = {LineTerminator} | [\s\t\f]
+AllCharset          = [\w\W]*
+Comment             = #{AllCharset}#
+StringDelimiter     = [\"]
+StringContent       = ([^\"\\] | (\\n) | (\\t) | (\\\\) | (\\r) | (\\\"))*
+CharDelimiter       = [\\]
+CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
 
-Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
-TraditionalComment   = "/#" [^#] ~"#/" | "/#" "#"+ "/"
-EndOfLineComment     = "//" {InputCharacter}# {LineTerminator}?
-DocumentationComment = "/##" {CommentContent} "#"+ "/"
-CommentContent       = ( [^#] | \#+ [^/#] )#
+%state STRINGFOUND
+%state CHARFOUND
 
 %%
 
@@ -49,6 +52,9 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
     "number"                { return symbol(sym.DOUBLE);    }
     "string"                { return symbol(sym.STRING);    }
 
+    "true"                  { return symbol(sym.TRUE);      }
+    "false"                 { return symbol(sym.FALSE);     }
+
     "if" 	            { return symbol(sym.IF);        }
     "else"                  { return symbol(sym.ELSE);      }
     "while"                 { return symbol(sym.WHILE);     }
@@ -60,6 +66,7 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
 
     "function"              { return symbol(sym.FUNCTION);  }
     "giveback"              { return symbol(sym.RETURN);    }
+    "void"                  { return symbol(sym.VOID);      }
     
     "print"                 { return symbol(sym.WRITE);     }
     "getvalue"              { return symbol(sym.READ);      }
@@ -73,8 +80,8 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
     
     "("                     { return symbol(sym.LPAR);      }
     ")"                     { return symbol(sym.RPAR);      }
-    "["                     { return symbol(sym.LBRACK);    }
-    "]"                     { return symbol(sym.RBRACK);     }
+    "\["                    { return symbol(sym.LBRACK);    }
+    "\]"                    { return symbol(sym.RBRACK);     }
 
     ">="                    { return symbol(sym.GREATEREQ); }
     "<="                    { return symbol(sym.LESSEQ);    }
@@ -87,14 +94,28 @@ CommentContent       = ( [^#] | \#+ [^/#] )#
     "or"                    { return symbol(sym.OR);        } 
     "and"                   { return symbol(sym.AND);       }
 
-    "->"                    { return symbol(sym.ASSIGN);    }
+    "<-"                    { return symbol(sym.ASSIGN);    }
    
  
     {Variable}              { return symbol(sym.IDENTIFIER, yytext());                                   }
     {Integer}               { return symbol(sym.INTNUMBER, new Integer(Integer.parseInt(yytext())));     }
     {Decimal}               { return symbol(sym.DOUBLENUMBER, new Double(Double.parseDouble(yytext()))); }
-    {Comment}               {  /* ignore */                                                              } 
-    {WhiteSpace}            {  /* ignore */                                                              }
+    {StringDelimiter}       { yybegin(STRINGFOUND);                                                      }
+    {CharDelimiter}         { yybegin(CHARFOUND);                                                        }
+    {WhiteSpace}            { /* ignore */                                                               }
+    {Comment}               { /* ignore */                                                               }
+    .                       { System.err.println("Illegal character <" + yytext() + "> at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); }
 
+}
+
+<STRINGFOUND> {
+    {StringDelimiter}       { yybegin(YYINITIAL);                         }
+    {StringContent}         { return symbol(sym.STRINGCONTENT, yytext()); }
+    .                       { System.err.println("Illegal character <" + yytext() + "> at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); }
+}
+
+<CHARFOUND> {
+    {CharDelimiter}         { yybegin(YYINITIAL);                         }
+    {CharContent}           { return symbol(sym.CHARCONTENT, new Character(yytext().charAt(0))); }
 }
 

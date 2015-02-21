@@ -1,0 +1,42 @@
+# Programa de prueba #
+# Matrox compiler #
+# Edilson Gonzalez y Guillermo Mazzoni #
+
+function integer main[]
+	integer test_int <- 10
+	character test_char <- \c\
+	boolean test_bool <- true
+	number test_number <- 10.0
+	string test_string <- "Hola mundo"
+
+	if (test_int = 10 and true)
+		print "Es igual"
+	else
+		print "Es diferente"
+	end
+
+	while (true)
+		print 1-2*3/4
+		print (not (1 < 2 or 1 <= 2 or 1 > 2 or 1 >= 2 or 1 <> 2 or 1 = 2))
+	end
+
+	for (integer i <- 0, i < 10, i <- i + 1)
+		getvalue test_string
+	end
+
+	switch (test_int or false)
+		option 1:
+			stop
+		end
+		
+		option 2:
+			stop
+		end
+	end
+
+	giveback 0
+end
+
+function void holaMundo[string message]
+	giveback message
+end

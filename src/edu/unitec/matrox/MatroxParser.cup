@@ -12,11 +12,14 @@ parser code {:
 /* Types */
 terminal INTEGER, CHAR, BOOLEAN, DOUBLE, STRING;
 
+/* Boolean types */
+terminal TRUE, FALSE;
+
 /* Flow control structures */
 terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, BREAK, END;
 
 /* Functions */
-terminal FUNCTION, RETURN;
+terminal FUNCTION, RETURN, VOID;
 
 /* I/O */
 terminal WRITE, READ;
@@ -43,6 +46,8 @@ terminal ASSIGN;
 terminal String IDENTIFIER;
 terminal Integer INTNUMBER;
 terminal Double DOUBLENUMBER;
+terminal Character CHARCONTENT;
+terminal String STRINGCONTENT;
 
 /* Non terminals */
 non terminal exp;
@@ -51,5 +56,8 @@ non terminal exp;
 precedence left ADD, MIN;
 precedence left MUL, DIV;
 
-exp ::= ADD         {: System.out.print("Hola"); :}
+exp ::= exp ADD         {: System.out.println("Hola"); :}
+    | exp FUNCTION      {: System.out.println("Función"); :}
+    | exp INTEGER       {: System.out.println("Entero"); :}
+    | /* Lambda */
 ;
