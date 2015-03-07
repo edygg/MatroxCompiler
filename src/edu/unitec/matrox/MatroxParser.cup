@@ -56,8 +56,72 @@ non terminal exp;
 precedence left ADD, MIN;
 precedence left MUL, DIV;
 
-exp ::= exp ADD         {: System.out.println("Hola"); :}
+/* exp ::= exp ADD         {: System.out.println("Hola"); :}
     | exp FUNCTION      {: System.out.println("Función"); :}
     | exp INTEGER       {: System.out.println("Entero"); :}
     | /* Lambda */
-;
+; */
+
+/* Gramática */
+arglist ::= 
+      exp { "," exp }; 
+
+string_exp ::= ( exp 
+      ( "+" 
+      | "+=" ) 
+      exp ); 
+
+testing_exp ::= 
+      ( exp 
+      ( ">" 
+      | "<" 
+      | ">=" 
+      | "<=" 
+      | "=" 
+      | "<>" ) 
+      exp );
+
+numeric_exp ::= 
+      ( ( "-" 
+      | "++" 
+      | "--" ) 
+      exp ) 
+      | ( exp 
+      ( "++" 
+      | "--" ) ) 
+      | ( exp 
+      ( "+" 
+      | "+=" 
+      | "-" 
+      | "-=" 
+      | "*" 
+      | "*=" 
+      | "/" 
+      | "/=" 
+      exp );
+
+logical_exp ::= 
+      ( "not" exp ) 
+      | ( exp 
+      ( "or"
+      | "and" 
+      | "=" ) 
+      exp ) 
+      | ( exp "?" exp ":" exp ) 
+      | "true" 
+      | "false" ;
+
+exp ::= 
+      numeric_exp 
+      | testing_exp 
+      | logical_exp 
+      | string_exp 
+      | "null"
+      | IDENTIFIER 
+      | ( "(" exp ")" ) 
+      | ( exp 
+      ( ( "(" [ arglist ] ")" ) 
+      | ( "[" exp "]" ) 
+      | ( "." exp ) 
+      | ( "," exp )  
+      ) ); 
