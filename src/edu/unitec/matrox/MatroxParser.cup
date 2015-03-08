@@ -24,8 +24,8 @@ terminal FUNCTION, RETURN, VOID;
 /* I/O */
 terminal WRITE, READ;
 
-/* Comma symbol */
-terminal COMMA;
+/* Comma & COLON symbol */
+terminal COMMA, COLON;
 
 /* Arithmetic operators */
 terminal ADD, MIN, MUL, DIV;
@@ -50,78 +50,84 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal exp;
+non terminal exp, statement, switchStatement, numericExp, logicalExp, compareExp, stringExp, argList;
 
 /* Precedences */
 precedence left ADD, MIN;
 precedence left MUL, DIV;
 
-/* exp ::= exp ADD         {: System.out.println("Hola"); :}
-    | exp FUNCTION      {: System.out.println("Función"); :}
-    | exp INTEGER       {: System.out.println("Entero"); :}
-    | /* Lambda */
-; */
 
-/* Gramática */
-arglist ::= 
-      exp { "," exp }; 
+argList ::= 
+      exp { COMMA exp } 
+;
 
-string_exp ::= ( exp 
-      ( "+" 
-      | "+=" ) 
-      exp ); 
+stringExp ::= 
+      ( exp
+      ( ADD 
+      | ADD EQU ) 
+      exp )
+;
 
-testing_exp ::= 
+numericExp ::= 
+      ( ( MIN 
+      | ADD ADD
+      | MIN MIN ) 
+      exp ) 
+      | ( exp 
+      ( ADD 
+      | MIN MIN ) ) 
+      | ( exp 
+      ( ADD 
+      | ADD EQU 
+      | MIN 
+      | MIN EQU 
+      | MUL 
+      | MUL EQU 
+      | DIV 
+      | DIV EQU 
+      exp )
+;
+
+logicalExp ::= 
+      ( NOT exp ) 
+      | ( exp 
+      ( OR
+      | AND 
+      | EQU ) 
+      exp ) 
+      | TRUE
+      | FALSE
+;
+
+compareExp ::= 
       ( exp 
-      ( ">" 
-      | "<" 
-      | ">=" 
-      | "<=" 
-      | "=" 
-      | "<>" ) 
-      exp );
-
-numeric_exp ::= 
-      ( ( "-" 
-      | "++" 
-      | "--" ) 
-      exp ) 
-      | ( exp 
-      ( "++" 
-      | "--" ) ) 
-      | ( exp 
-      ( "+" 
-      | "+=" 
-      | "-" 
-      | "-=" 
-      | "*" 
-      | "*=" 
-      | "/" 
-      | "/=" 
-      exp );
-
-logical_exp ::= 
-      ( "not" exp ) 
-      | ( exp 
-      ( "or"
-      | "and" 
-      | "=" ) 
-      exp ) 
-      | ( exp "?" exp ":" exp ) 
-      | "true" 
-      | "false" ;
+      ( GREATER 
+      | LESS
+      | GREATEREQ 
+      | LESSEQ
+      | EQU 
+      | NEQ ) 
+      exp )
+;
 
 exp ::= 
-      numeric_exp 
-      | testing_exp 
-      | logical_exp 
-      | string_exp 
-      | "null"
-      | IDENTIFIER 
-      | ( "(" exp ")" ) 
+      numericExp 
+      | compareExp 
+      | logicalExp 
+      | stringExp  
+      | IDENTIFIER
+      |  LPAR exp RPAR 
       | ( exp 
-      ( ( "(" [ arglist ] ")" ) 
-      | ( "[" exp "]" ) 
-      | ( "." exp ) 
-      | ( "," exp )  
-      ) ); 
+      (  LBRACK argList RBRACK 
+      |  LBRACK exp RBRACK  
+      |  COMMA exp ) ) 
+;
+
+/* Falta hacer el Statement */
+switchStatement ::= 
+      SWITCH LPAR exp RPAR  
+      { ( CASE exp COLON ) 
+      | ( DEFAULT COLON ) 
+      | statement } 
+      END
+;
