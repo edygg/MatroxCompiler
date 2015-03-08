@@ -16,7 +16,7 @@ terminal INTEGER, CHAR, BOOLEAN, DOUBLE, STRING;
 terminal TRUE, FALSE;
 
 /* Flow control structures */
-terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, BREAK, END;
+terminal IF, ELSE, WHILE, FOR, SWITCH, CASE, BREAK, DEFAULT, END;
 
 /* Functions */
 terminal FUNCTION, RETURN, VOID;

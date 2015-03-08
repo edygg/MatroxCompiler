@@ -1,5 +1,5 @@
 # Programa de prueba #
-# Matrox compiler #
+# Matrox Compiler #
 # Edilson Gonzalez y Guillermo Mazzoni #
 
 function integer main[]
@@ -11,7 +11,7 @@ function integer main[]
 
 	if (test_int = 10 and true)
 		print "Es igual"
-	else
+	else if(false)
 		print "Es diferente"
 	end
 
@@ -21,22 +21,22 @@ function integer main[]
 	end
 
 	for (integer i <- 0, i < 10, i <- i + 1)
-		getvalue test_string
+		get_value test_string
 	end
 
 	switch (test_int or false)
-		option 1:
-			stop
+		option 1, 3
+			print "One or three"
 		end
 		
-		option 2:
-			stop
+		option 2
+			print "Only two"
 		end
 	end
 
-	giveback 0
+	give_back 0
 end
 
 function void holaMundo[string message]
-	giveback message
+	give_back message
 end

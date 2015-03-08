@@ -61,15 +61,16 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
     "for"                   { return symbol(sym.FOR);       }
     "switch"                { return symbol(sym.SWITCH);    }
     "option"                { return symbol(sym.CASE);      }
+    "by_default"            { return symbol(sym.DEFAULT);   }
     "stop"                  { return symbol(sym.BREAK);     }
     "end"                   { return symbol(sym.END);       }
 
     "function"              { return symbol(sym.FUNCTION);  }
-    "giveback"              { return symbol(sym.RETURN);    }
+    "give_back"             { return symbol(sym.RETURN);    }
     "void"                  { return symbol(sym.VOID);      }
     
     "print"                 { return symbol(sym.WRITE);     }
-    "getvalue"              { return symbol(sym.READ);      }
+    "get_value"             { return symbol(sym.READ);      }
     
     ","                     { return symbol(sym.COMMA);     }
 
