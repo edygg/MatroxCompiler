@@ -1,13 +1,20 @@
-
 package edu.unitec.matrox;
 
+import java.util.*;
+import java.io.*;
 import java_cup.runtime.*;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 parser code {:
-    public Parser(java.io.Reader input) {
-        super(new Lexer(input));
-    }
-:}
+  public boolean syntaxErrors;
+
+  Lexer lexer;
+
+  public Parser(Lexer lex, ComplexSymbolFactory sf) {
+    super(lex,sf);
+    lexer = lex;
+  }
+:};
 
 /* Types */
 terminal INTEGER, CHAR, BOOLEAN, DOUBLE, STRING;
@@ -24,7 +31,7 @@ terminal FUNCTION, RETURN, VOID;
 /* I/O */
 terminal WRITE, READ;
 
-/* Comma & COLON symbol */
+/* COMMA & COLON symbol */
 terminal COMMA, COLON;
 
 /* Arithmetic operators */
@@ -50,84 +57,86 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal exp, statement, switchStatement, numericExp, logicalExp, compareExp, stringExp, argList;
+non terminal exp, statement, while_Statement ,switch_Statement, if_Statement ,numeric_Exp, logical_Exp, compare_Exp, string_Exp, arg_List;
 
 /* Precedences */
 precedence left ADD, MIN;
 precedence left MUL, DIV;
 
-
-argList ::= 
-      exp { COMMA exp } 
+string_Exp ::= 
+      exp:e1 ADD exp:e2             {: RESULT = stringExp.concat(e1,e2); :}
 ;
 
-stringExp ::= 
-      ( exp
-      ( ADD 
-      | ADD EQU ) 
-      exp )
+numeric_Exp ::=
+      MIN exp:e                     {: RESULT = -e; :}
+      | ADD ADD exp:e               {: RESULT = ++e; :}
+      | MIN MIN exp:e               {: RESULT = --e; :}
+      | exp:e ADD ADD               {: RESULT = e++; :}
+      | exp:e MIN MIN               {: RESULT = e--; :}
+      | exp:e1 ADD exp:e2           {: RESULT = e1 + e2; :}
+      | exp:e1 ADD EQU exp:e2       {: RESULT = e1 += e2; :}
+      | exp:e1 MIN exp:e2           {: RESULT = e1 - e2; :}
+      | exp:e1 MIN EQU exp:e2       {: RESULT = e1 -= e2; :}
+      | exp:e1 MUL exp:e2           {: RESULT = e1 * e2; :}
+      | exp:e1 MUL EQU exp:e2       {: RESULT = e1 *= e2; :}
+      | exp:e1 DIV exp:e2           {: RESULT = e1 / e2; :}
+      | exp:e1 DIV EQU exp:e2       {: RESULT = e1 /= e2; :}
+;
+ 
+
+compare_Exp ::= 
+      exp:e1 GREATER exp:e2         {: RESULT = e1 > e2; :}
+      | exp:e1 LESS exp:e2          {: RESULT = e1 < e2; :}
+      | exp:e1 GREATEREQ exp:e2     {: RESULT = e1 >= e2; :}
+      | exp:e1 LESSEQ exp:e2        {: RESULT = e1 <= e2; :}
+      | exp:e1 EQU exp:e2           {: RESULT = e1 = e2; :}
+      | exp:e1 NEQ exp:e2           {: RESULT = e1 <> e2; :}
 ;
 
-numericExp ::= 
-      ( ( MIN 
-      | ADD ADD
-      | MIN MIN ) 
-      exp ) 
-      | ( exp 
-      ( ADD 
-      | MIN MIN ) ) 
-      | ( exp 
-      ( ADD 
-      | ADD EQU 
-      | MIN 
-      | MIN EQU 
-      | MUL 
-      | MUL EQU 
-      | DIV 
-      | DIV EQU 
-      exp )
+logical_Exp ::= 
+      NOT exp:e                     {: RESULT = not e; :}
+      | exp:e1 OR exp:e2            {: RESULT = e1 or e2; :}
+      | exp:e1 AND exp:e2           {: RESULT = e1 and e2; :}
+      | exp:e1 EQU exp:e2           {: RESULT = e1 = e2; :}
+      | TRUE                        {: RESULT = true; :}
+      | FALSE                       {: RESULT = false; :}      
 ;
 
-logicalExp ::= 
-      ( NOT exp ) 
-      | ( exp 
-      ( OR
-      | AND 
-      | EQU ) 
-      exp ) 
-      | TRUE
-      | FALSE
-;
+arg_List ::= 
+      exp 
+      | COMMA exp 
+; 
 
-compareExp ::= 
-      ( exp 
-      ( GREATER 
-      | LESS
-      | GREATEREQ 
-      | LESSEQ
-      | EQU 
-      | NEQ ) 
-      exp )
-;
-
+/*
 exp ::= 
       numericExp 
       | compareExp 
       | logicalExp 
       | stringExp  
       | IDENTIFIER
-      |  LPAR exp RPAR 
-      | ( exp 
-      (  LBRACK argList RBRACK 
-      |  LBRACK exp RBRACK  
-      |  COMMA exp ) ) 
+      | LPAR exp RPAR  
+      | exp LBRACK argList RBRACK 
+      | exp LBRACK exp RBRACK  
+      | exp COMMA exp  
+;
+*/
+
+while_Statement ::= 
+      WHILE LPAR exp RPAR statement
+      END
 ;
 
-/* Falta hacer el Statement */
-switchStatement ::= 
-      SWITCH LPAR exp RPAR  
-      { ( CASE exp COLON ) 
-      | ( DEFAULT COLON ) 
-      | statement } 
-      END
+switch_Statement ::= 
+      SWITCH LPAR exp LPAR  
+      CASE exp   
+      |  DEFAULT   
+      | statement
+      END 
+;
+
+if_Sstatement ::= 
+      IF LPAR exp RPAR statement 
+      | ELSE IF LPAR statement RPAR
+      | ELSE statement 
+      END  
 ;
