@@ -2,6 +2,7 @@
 
 package edu.unitec.matrox;
 
+import java.io.BufferedReader;
 import java_cup.runtime.*;
 
 
@@ -332,6 +333,10 @@ class Lexer implements java_cup.runtime.Scanner {
    * otherwise, it will have a value of 0.
    */
   private int zzFinalHighSurrogate = 0;
+
+    Lexer(BufferedReader bufferedReader, ComplexSymbolFactory csf) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
   /* user code: */
   private Symbol symbol(int type) {

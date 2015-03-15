@@ -18,8 +18,8 @@ public class Main {
       }
       /* End Errors */
       try {
-          //Parser parse = new Parser(new InputStreamReader(new FileInputStream(args[0])));
-          //parse.parse();
+         // Parser parse = new Parser(new InputStreamReader(new FileInputStream(args[0])));
+         // parse.parse();
           Lexer lexer = new Lexer(new InputStreamReader(new FileInputStream(args[0])));
           Symbol token = lexer.next_token();
           while (token.sym != sym.EOF) {

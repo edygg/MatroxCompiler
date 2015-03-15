@@ -35,7 +35,7 @@ terminal WRITE, READ;
 terminal COMMA, COLON;
 
 /* Arithmetic operators */
-terminal ADD, MIN, MUL, DIV;
+terminal ADD, MIN, MUL, DIV, UMIN, UPINC, UPDEC, UPRINC, UPRDEC;
 
 /* Grouping symbols */
 terminal LPAR, RPAR, LBRACK, RBRACK;
@@ -47,7 +47,7 @@ terminal GREATEREQ, LESSEQ, GREATER, LESS, NEQ, EQU;
 terminal NOT, OR, AND;
 
 /* Assignment operator */
-terminal ASSIGN;
+terminal ASSIGN, ASSIGNADD, ASSIGNMIN, ASSIGNMUL, ASSIGNDIV;
 
 /* Values */
 terminal String IDENTIFIER;
@@ -57,76 +57,90 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal exp, statement, while_Statement ,switch_Statement, if_Statement ,numeric_Exp, logical_Exp, compare_Exp, string_Exp, arg_List;
+non terminal literal_exp, numeric_exp, string_exp, logical_exp, statements, exp, arg_list, statement ,if_statement, while_statement, switch_statement, result;
+non terminal Boolean boolean_exp, compare_exp;
 
 /* Precedences */
+precedence right ASSIGN, ASSIGNADD, ASSIGNMIN, ASSIGNMUL, ASSIGNDIV;
+precedence left OR;
+precedence left AND;
+precedence left LESS, LESSEQ, GREATER, GREATEREQ, EQU, NEQ;
 precedence left ADD, MIN;
 precedence left MUL, DIV;
+precedence right UPRINC, UPRDEC, UMIN, NOT;
+precedence right UPINC, UPDEC;
 
-string_Exp ::= 
-      exp:e1 ADD exp:e2             {: RESULT = stringExp.concat(e1,e2); :}
+result ::= statements:s                        {: System.out.println(s); :}   
+;                          
+
+statements ::= statements:s exp:e              {: //System.out.print(e); :}    
+                | exp:e                        {: //System.out.print(e); :} 
 ;
 
-numeric_Exp ::=
-      MIN exp:e                     {: RESULT = -e; :}
-      | ADD ADD exp:e               {: RESULT = ++e; :}
-      | MIN MIN exp:e               {: RESULT = --e; :}
-      | exp:e ADD ADD               {: RESULT = e++; :}
-      | exp:e MIN MIN               {: RESULT = e--; :}
-      | exp:e1 ADD exp:e2           {: RESULT = e1 + e2; :}
-      | exp:e1 ADD EQU exp:e2       {: RESULT = e1 += e2; :}
-      | exp:e1 MIN exp:e2           {: RESULT = e1 - e2; :}
-      | exp:e1 MIN EQU exp:e2       {: RESULT = e1 -= e2; :}
-      | exp:e1 MUL exp:e2           {: RESULT = e1 * e2; :}
-      | exp:e1 MUL EQU exp:e2       {: RESULT = e1 *= e2; :}
-      | exp:e1 DIV exp:e2           {: RESULT = e1 / e2; :}
-      | exp:e1 DIV EQU exp:e2       {: RESULT = e1 /= e2; :}
-;
- 
-
-compare_Exp ::= 
-      exp:e1 GREATER exp:e2         {: RESULT = e1 > e2; :}
-      | exp:e1 LESS exp:e2          {: RESULT = e1 < e2; :}
-      | exp:e1 GREATEREQ exp:e2     {: RESULT = e1 >= e2; :}
-      | exp:e1 LESSEQ exp:e2        {: RESULT = e1 <= e2; :}
-      | exp:e1 EQU exp:e2           {: RESULT = e1 = e2; :}
-      | exp:e1 NEQ exp:e2           {: RESULT = e1 <> e2; :}
+exp ::= numeric_exp 
+        | boolean_exp 
+        | logical_exp 
+       // | string_exp
+        | literal_exp
+        | IDENTIFIER
+        | LPAR exp RPAR
 ;
 
-logical_Exp ::= 
-      NOT exp:e                     {: RESULT = not e; :}
-      | exp:e1 OR exp:e2            {: RESULT = e1 or e2; :}
-      | exp:e1 AND exp:e2           {: RESULT = e1 and e2; :}
-      | exp:e1 EQU exp:e2           {: RESULT = e1 = e2; :}
-      | TRUE                        {: RESULT = true; :}
-      | FALSE                       {: RESULT = false; :}      
+literal_exp ::= INTNUMBER:i                   {: RESULT = (int)i; :}
+                | DOUBLENUMBER:d              {: RESULT = (double)d; :}
+                | STRINGCONTENT:s             {: RESULT = (String)s; :}
+                | CHARCONTENT:c               {: RESULT = (Character)c; :}
 ;
 
-arg_List ::= 
-      exp 
-      | COMMA exp 
-; 
-
-/*
-exp ::= 
-      numericExp 
-      | compareExp 
-      | logicalExp 
-      | stringExp  
-      | IDENTIFIER
-      | LPAR exp RPAR  
-      | exp LBRACK argList RBRACK 
-      | exp LBRACK exp RBRACK  
-      | exp COMMA exp  
+numeric_exp ::= MIN exp:e                     {: RESULT = - (Integer)e; :}
+                %prec UMIN
+                //| ADD ADD exp:e             {: RESULT = ++(int)e; :}
+                //%prec UPRINC
+                //| MIN MIN exp:e             {: RESULT = --(int)e; :}
+                //%prec UPRDEC
+                | exp:e ADD ADD               {: e = (Integer)e + 1; RESULT = e; :}
+                %prec UPINC
+                | exp:e MIN MIN               {: e = (Integer)e - 1; RESULT = e; :}
+                %prec UPDEC
+                | exp:e1 ADD exp:e2           {: if(e1 instanceof Integer) { RESULT = (Integer)e1 + (Integer)e2; } else { RESULT = (double)e1 + (double)e2; }   :}
+                | exp:e1 ADD ASSIGN exp:e2    {: e1 = (Integer)e1 + (Integer)e2; RESULT = e1; :}
+                %prec ASSIGNADD
+                | exp:e1 MIN exp:e2           {: if(e1 instanceof Integer) { RESULT = (int)e1 - (int)e2; } else { RESULT = (double)e1 - (double)e2; }   :}
+                | exp:e1 MIN ASSIGN exp:e2    {: e1 = (Integer)e1 - (Integer)e2; RESULT = e1; :}
+                %prec ASSIGNMIN
+                | exp:e1 MUL exp:e2           {: if(e1 instanceof Integer) { RESULT = (Integer)e1 * (Integer)e2; } else { RESULT = (double)e1 * (double)e2; }   :}
+                | exp:e1 MUL ASSIGN exp:e2    {: e1 = (Integer)e1 * (Integer)e2; RESULT = e1; :}
+                %prec ASSIGNMUL
+                | exp:e1 DIV exp:e2           {: if(e1 instanceof Integer) { RESULT = (Integer)e1 / (Integer)e2; } else { RESULT = (double)e1 / (double)e2; }   :}
+                | exp:e1 DIV ASSIGN exp:e2    {: e1 = (Integer)e1 / (Integer)e2; RESULT = e1; :}
+                %prec ASSIGNDIV
 ;
-*/
 
-while_Statement ::= 
-      WHILE LPAR exp RPAR statement
-      END
+
+string_exp ::= exp:e1 ADD exp:e2
+              | exp:e1 ADD ASSIGN exp:e2
+              %prec ASSIGNADD
 ;
 
-switch_Statement ::= 
+boolean_exp ::= exp:e1 GREATER exp:e2         {: if((int)e1 > (int)e2) RESULT = true; else RESULT = false; :}
+            | exp:e1 LESS exp:e2              {: if((int)e1 < (int)e2) RESULT = true; else RESULT = false; :}
+            | exp:e1 GREATEREQ exp:e2         {: if((int)e1 >= (int)e2) RESULT = true; else RESULT = false; :}
+            | exp:e1 LESSEQ exp:e2            {: if((int)e1 <= (int)e2) RESULT = true; else RESULT = false; :}
+            | exp:e1 EQU exp:e2               {: if (e1 instanceof Integer) { if((int)e1 == (int)e2) { RESULT = true; } else { RESULT = false; } } else if (e1 instanceof Boolean) { if((boolean)e1 == (boolean)e2) { RESULT = true; } else { RESULT = false; } } else if (e1 instanceof Double) { if((double)e1 == (double)e2) { RESULT = true; } else { RESULT = false; } } else { if(e1.toString() == e2.toString()) { RESULT = true; } else { RESULT = false; } } :}
+            | exp:e1 NEQ exp:e2               {: if (e1 instanceof Integer) { if((int)e1 != (int)e2) { RESULT = true; } else { RESULT = false; } } else if (e1 instanceof Boolean) { if((boolean)e1 != (boolean)e2) { RESULT = true; } else { RESULT = false; } } else if (e1 instanceof Double) { if((double)e1 != (double)e2) { RESULT = true; } else { RESULT = false; } } else { if(e1.toString() != e2.toString()) { RESULT = true; } else { RESULT = false; } } :}
+;
+
+logical_exp ::= NOT exp:e                     {: RESULT = !(boolean)e; :}
+           | exp:e1 OR exp:e2                 {: RESULT = (boolean)e1 || (boolean)e2; :}
+           | exp:e1 AND exp:e2                {: RESULT = (boolean)e1 && (boolean)e2; :}
+           | TRUE                             {: RESULT = true; :}
+           | FALSE                            {: RESULT = false; :}      
+;
+
+while_statement ::= WHILE LPAR exp RPAR statement END
+;
+
+switch_statement ::= 
       SWITCH LPAR exp LPAR  
       CASE exp   
       |  DEFAULT   
@@ -134,7 +148,7 @@ switch_Statement ::=
       END 
 ;
 
-if_Sstatement ::= 
+if_statement ::= 
       IF LPAR exp RPAR statement 
       | ELSE IF LPAR statement RPAR
       | ELSE statement 
