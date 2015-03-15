@@ -1,29 +1,8 @@
-
-(1 + (2 * ( 5 / 3.54)))*(-3)
-"Hola" + " " + "Mundo" + " " + 3
-3 < 2 and 5 < 3 or "Hola" <> "Hola"
-#10 + 10#
-1
-
-integer hola <- 90, mundo <-10, loco <-90
-hola <- 10
-mundo <- 89
-loco <- 100
-
-if (hola > 5)
-	
-end
-
-switch(var)
-	option 2, 3, 4
-		"Hola 1"
-	end
-
-	option 5
-		"Hola 2"
-	end
-
-	option by_default
-		"Hola 3"
+function integer Add [integer x, string y]
+	x <- 2+2
+	for(x<-2, x <= 10, x++)
+		if(x > 2)
+			"Hola" + "Sup!"
+		end
 	end
 end
