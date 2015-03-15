@@ -29,7 +29,6 @@ Integer = [0-9]+
 Decimal = [0-9]*[\.][0-9]+
 
 LineTerminator      = \r|\n|\r\n
-InputCharacter      = [^\r\n]
 WhiteSpace          = {LineTerminator} | [\s\t\f]
 AllCharset          = [\w\W]*
 Comment             = #{AllCharset}#
@@ -57,6 +56,7 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
 
     "if" 	            { return symbol(sym.IF);        }
     "else"                  { return symbol(sym.ELSE);      }
+    "elseif"                { return symbol(sym.ELSEIF);    }
     "while"                 { return symbol(sym.WHILE);     }
     "for"                   { return symbol(sym.FOR);       }
     "switch"                { return symbol(sym.SWITCH);    }
