@@ -57,7 +57,7 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal switch_case_statements, switch_case_statement, switch_case_exp_list, literal_exp, numeric_exp, string_exp, logical_exp, statements, exp, arg_list, statement ,if_statement, while_statement, switch_statement, result, else_if_statement, else_if_statements;
+non terminal variable_declaration, variable_declarators, variable_declarator, type, switch_case_statements, switch_case_statement, switch_case_exp_list, literal_exp, numeric_exp, string_exp, logical_exp, statements, exp, arg_list, statement ,if_statement, while_statement, switch_statement, result, else_if_statement, else_if_statements;
 non terminal Boolean boolean_exp, compare_exp;
 
 /* Precedences */
@@ -82,6 +82,8 @@ statements ::= statement statements          {: :}
 statement ::= if_statement
             | while_statement
             | switch_statement
+            | variable_declaration
+            | variable_declarator
             | RETURN exp
             | exp:e                             {: RESULT = e; System.out.println(e); :}
 ;
@@ -169,4 +171,22 @@ else_if_statements ::= else_if_statement else_if_statements
 ;
 
 else_if_statement ::= ELSEIF LPAR exp RPAR statements
+;
+
+variable_declaration ::= type variable_declarators
+                        | type IDENTIFIER
+;
+
+variable_declarators ::= variable_declarator COMMA variable_declarators
+                        | variable_declarator
+;
+
+variable_declarator ::= IDENTIFIER ASSIGN exp:e                                         {: System.out.println("Declaracion exp: " + e); :}
+;
+
+type ::= INTEGER
+        | CHAR
+        | BOOLEAN
+        | DOUBLE
+        | STRING
 ;

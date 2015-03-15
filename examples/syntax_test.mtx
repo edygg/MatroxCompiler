@@ -5,6 +5,15 @@
 #10 + 10#
 1
 
+integer hola <- 90, mundo <-10, loco <-90
+hola <- 10
+mundo <- 89
+loco <- 100
+
+if (hola > 5)
+	
+end
+
 switch(var)
 	option 2, 3, 4
 		"Hola 1"
