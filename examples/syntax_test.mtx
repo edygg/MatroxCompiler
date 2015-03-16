@@ -1,8 +1,11 @@
-function integer Add [integer x, string y]
-	x <- 2+2
-	for(x<-2, x <= 10, x++)
-		if(x > 2)
-			"Hola" + "Sup!"
+function integer main[]
+	function number Area[integer a, integer b]
+		if(a > 5)
+			integer c<-a*b
+			for(d<-c, d <= 50, i++)
+				2+2
+			end
 		end
+		give_back c
 	end
 end

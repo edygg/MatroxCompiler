@@ -65,6 +65,7 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
     "stop"                  { return symbol(sym.BREAK);     }
     "end"                   { return symbol(sym.END);       }
 
+    "main"                  { return symbol(sym.MAIN);      }
     "function"              { return symbol(sym.FUNCTION);  }
     "give_back"             { return symbol(sym.RETURN);    }
     "void"                  { return symbol(sym.VOID);      }
