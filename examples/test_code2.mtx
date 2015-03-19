@@ -1,3 +1,11 @@
-+
-function
-integer
+function integer main[]
+	function number Area[integer a, integer b]
+		if(a > 5)
+			integer c<-a*b
+			for(d<-c, d <= 50, i++)
+				2+2
+			end
+		end
+		give_back c
+	end
+end

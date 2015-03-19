@@ -8,65 +8,62 @@ package edu.unitec.matrox;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int UPRINC = 34;
-  public static final int ASSIGNDIV = 53;
-  public static final int CHARCONTENT = 57;
-  public static final int FUNCTION = 20;
-  public static final int ASSIGNMIN = 51;
+  public static final int ASSIGNDIV = 50;
+  public static final int CHARCONTENT = 54;
+  public static final int FUNCTION = 19;
+  public static final int ASSIGNMIN = 48;
   public static final int CHAR = 3;
   public static final int CASE = 15;
   public static final int DOUBLE = 5;
   public static final int INTEGER = 2;
-  public static final int ASSIGNMUL = 52;
-  public static final int GREATER = 42;
-  public static final int ASSIGNADD = 50;
-  public static final int LESS = 43;
+  public static final int ASSIGNMUL = 49;
+  public static final int GREATER = 39;
+  public static final int ASSIGNADD = 47;
+  public static final int LESS = 40;
   public static final int FOR = 13;
-  public static final int WRITE = 23;
-  public static final int AND = 48;
-  public static final int NOT = 46;
+  public static final int WRITE = 22;
+  public static final int AND = 45;
+  public static final int NOT = 43;
+  public static final int SEMICOLON = 25;
   public static final int ELSEIF = 11;
-  public static final int RPAR = 37;
-  public static final int UMIN = 31;
-  public static final int OR = 47;
-  public static final int COMMA = 25;
-  public static final int DIV = 30;
-  public static final int ASSIGN = 49;
-  public static final int LESSEQ = 41;
-  public static final int MIN = 28;
-  public static final int MAIN = 19;
+  public static final int RPAR = 34;
+  public static final int UMIN = 30;
+  public static final int OR = 44;
+  public static final int COMMA = 24;
+  public static final int DIV = 29;
+  public static final int ASSIGN = 46;
+  public static final int LESSEQ = 38;
+  public static final int MIN = 27;
+  public static final int MAIN = 18;
   public static final int IF = 9;
-  public static final int UPDEC = 33;
+  public static final int UPDEC = 32;
   public static final int EOF = 0;
   public static final int BOOLEAN = 4;
-  public static final int RETURN = 21;
+  public static final int RETURN = 20;
   public static final int TRUE = 7;
   public static final int error = 1;
-  public static final int UPRDEC = 35;
-  public static final int MUL = 29;
-  public static final int ADD = 27;
-  public static final int DOUBLENUMBER = 56;
-  public static final int NEQ = 44;
-  public static final int BREAK = 16;
-  public static final int VOID = 22;
-  public static final int LBRACK = 38;
+  public static final int MUL = 28;
+  public static final int ADD = 26;
+  public static final int DOUBLENUMBER = 53;
+  public static final int NEQ = 41;
+  public static final int VOID = 21;
+  public static final int LBRACK = 35;
   public static final int SWITCH = 14;
-  public static final int EQU = 45;
-  public static final int COLON = 26;
+  public static final int EQU = 42;
   public static final int ELSE = 10;
-  public static final int RBRACK = 39;
-  public static final int READ = 24;
+  public static final int RBRACK = 36;
+  public static final int READ = 23;
   public static final int WHILE = 12;
-  public static final int DEFAULT = 17;
-  public static final int END = 18;
-  public static final int GREATEREQ = 40;
-  public static final int LPAR = 36;
+  public static final int DEFAULT = 16;
+  public static final int END = 17;
+  public static final int GREATEREQ = 37;
+  public static final int LPAR = 33;
   public static final int STRING = 6;
   public static final int FALSE = 8;
-  public static final int STRINGCONTENT = 58;
-  public static final int UPINC = 32;
-  public static final int INTNUMBER = 55;
-  public static final int IDENTIFIER = 54;
+  public static final int STRINGCONTENT = 55;
+  public static final int UPINC = 31;
+  public static final int INTNUMBER = 52;
+  public static final int IDENTIFIER = 51;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -84,7 +81,6 @@ public class sym {
   "FOR",
   "SWITCH",
   "CASE",
-  "BREAK",
   "DEFAULT",
   "END",
   "MAIN",
@@ -94,7 +90,7 @@ public class sym {
   "WRITE",
   "READ",
   "COMMA",
-  "COLON",
+  "SEMICOLON",
   "ADD",
   "MIN",
   "MUL",
@@ -102,8 +98,6 @@ public class sym {
   "UMIN",
   "UPINC",
   "UPDEC",
-  "UPRINC",
-  "UPRDEC",
   "LPAR",
   "RPAR",
   "LBRACK",

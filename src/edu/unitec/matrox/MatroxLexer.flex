@@ -62,7 +62,6 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
     "switch"                { return symbol(sym.SWITCH);    }
     "option"                { return symbol(sym.CASE);      }
     "by_default"            { return symbol(sym.DEFAULT);   }
-    "stop"                  { return symbol(sym.BREAK);     }
     "end"                   { return symbol(sym.END);       }
 
     "main"                  { return symbol(sym.MAIN);      }
@@ -74,6 +73,7 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
     "get_value"             { return symbol(sym.READ);      }
     
     ","                     { return symbol(sym.COMMA);     }
+    ";"                     { return symbol(sym.SEMICOLON); }
 
     "+"                     { return symbol(sym.ADD);       }
     "-"                     { return symbol(sym.MIN);       }
