@@ -1,6 +1,7 @@
 package edu.unitec.ast;
-import visitor.Visitor;
-import visitor.TypeVisitor;
+
+import edu.unitec.visitor.Visitor;
+import edu.unitec.visitor.TypeVisitor;
 
 public class And extends Exp {
   public Exp e1,e2;

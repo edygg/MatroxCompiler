@@ -1,0 +1,50 @@
+package edu.unitec.visitor;
+
+import edu.unitec.ast.*;
+
+public interface TypeVisitor {
+  public Type visit(Add n);
+  public Type visit(And n);
+  public Type visit(Assign n);
+  public Type visit(BooleanLiteral n);
+  public Type visit(BooleanType n);
+  public Type visit(CharLiteral n);
+  public Type visit(CharType n);
+  public Type visit(Div n);
+  public Type visit(DoubleLiteral n);
+  public Type visit(DoubleType n);
+  public Type visit(Equ n);
+  public Type visit(Exp n);
+  public Type visit(False n);
+  public Type visit(For n);
+  public Type visit(FunctionDeclaration n);
+  public Type visit(FunctionDeclarations n);
+  public Type visit(Greater n);
+  public Type visit(GreaterEq n);
+  public Type visit(Identifier n);
+  public Type visit(IdentifierExp n);
+  public Type visit(IdentifierType n);
+  public Type visit(If n);
+  public Type visit(IntegerLiteral n);
+  public Type visit(IntegerType n);
+  public Type visit(Less n);
+  public Type visit(LessEq n);
+  public Type visit(MainClass n);
+  public Type visit(Min n);
+  public Type visit(Mul n);
+  public Type visit(Neq n);
+  public Type visit(Not n);
+  public Type visit(Or n);
+  public Type visit(Parameter n);
+  public Type visit(Parameters n);
+  public Type visit(Print n);
+  public Type visit(Statement n);
+  public Type visit(Statements n);
+  public Type visit(StringLiteral n);
+  public Type visit(StringType n);
+  public Type visit(True n);
+  public Type visit(Type n);
+  public Type visit(VariableDeclaration n);
+  public Type visit(VariableDeclarations n);
+  public Type visit(While n);
+}

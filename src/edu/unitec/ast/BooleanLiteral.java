@@ -3,10 +3,10 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class StringLiteral extends Exp {
-  public String i;
+public class BooleanLiteral extends Exp {
+  public boolean i;
 
-  public StringLiteral(String ai) {
+  public BooleanLiteral(boolean ai) {
     i=ai;
   }
 
