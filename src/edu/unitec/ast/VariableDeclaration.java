@@ -7,6 +7,7 @@ public class VariableDeclaration extends Statement{
   public Type t;
   public Identifier i;
   public VariableDeclarators vds;
+
   
   public VariableDeclaration(Type at, Identifier ai) {
     t=at; i=ai;
