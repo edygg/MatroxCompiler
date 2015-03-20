@@ -6,6 +6,7 @@ import edu.unitec.visitor.TypeVisitor;
 public class VariableDeclaration {
   public Type t;
   public Identifier i;
+  //Variable declarators
   
   public VariableDeclaration(Type at, Identifier ai) {
     t=at; i=ai;

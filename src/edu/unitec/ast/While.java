@@ -5,9 +5,9 @@ import edu.unitec.visitor.TypeVisitor;
 
 public class While extends Statement {
   public Exp e;
-  public Statement s;
+  public Statements s;
 
-  public While(Exp ae, Statement as) {
+  public While(Exp ae, Statements as) {
     e=ae; s=as; 
   }
 

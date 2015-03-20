@@ -6,9 +6,12 @@ import edu.unitec.visitor.TypeVisitor;
 public class For extends Statement {
   public VariableDeclaration vd;  
   public Exp e;
-  public Statement s;
+  public Statements s;
 
-  public For(VariableDeclaration avd ,Exp ae, Statement as) {
+  //Este hay que hacer el for_init
+  //FOR LPAR for_init SEMICOLON exp SEMICOLON exp RPAR statements END
+  //FOR LPAR for_init SEMICOLON exp SEMICOLON variable_declarator RPAR statements END
+  public For(VariableDeclaration avd ,Exp ae, Statements as) {
     vd = avd;  e=ae; s=as; 
   }
 
