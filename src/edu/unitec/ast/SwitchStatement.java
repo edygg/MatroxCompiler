@@ -3,11 +3,12 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Not extends LogicalExp {
+public class SwitchStatement extends Statement {
   public Exp e;
-  
-  public Not(Exp ae) {
-    e=ae; 
+  public SwitchCaseStatements scs;
+
+  public SwitchStatement(Exp ae, SwitchCaseStatements as) {
+    e=ae; scs=as; 
   }
 
   public void accept(Visitor v) {

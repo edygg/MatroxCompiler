@@ -47,4 +47,28 @@ public interface TypeVisitor {
   public Type visit(VariableDeclaration n);
   public Type visit(VariableDeclarations n);
   public Type visit(While n);
+  public Type visit(NumericExp n);
+  public Type visit(Umin n);
+  public Type visit(Uprinc n);
+  public Type visit(Uprdec n);
+  public Type visit(Upinc n);
+  public Type visit(Updec n);
+  public Type visit(AddAssign n);
+  public Type visit(MinAssign n);
+  public Type visit(MulAssign n);
+  public Type visit(DivAssign n);
+  public Type visit(BooleanExp n);
+  public Type visit(LogicalExp n);
+  public Type visit(LiteralExp n);
+  public Type visit(LParExpRPar n);
+  public Type visit(VariableDeclarator n);
+  public Type visit(VariableDeclarators n);
+  public Type visit(ForInit n);
+  public Type visit(SwitchCaseExpList n);
+  public Type visit(SwitchCaseStatement n);
+  public Type visit(SwitchCaseStatements n);
+  public Type visit(SwitchStatement n);
+  public Type visit(Return n);
+  public Type visit(Read n);
+  public Type visit(Write n);
 }

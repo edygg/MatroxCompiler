@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class And extends Exp {
+public class And extends LogicalExp {
   public Exp e1,e2;
   
   public And(Exp ae1, Exp ae2) {

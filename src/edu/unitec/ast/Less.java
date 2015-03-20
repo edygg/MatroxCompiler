@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Less extends Exp {
+public class Less extends BooleanExp {
   public Exp e1,e2;
   
   public Less(Exp ae1, Exp ae2) {

@@ -4,12 +4,18 @@ import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
 public class For extends Statement {
-  public VariableDeclaration vd;  
-  public Exp e;
+  public ForInit fi;
+  public Exp e1;
+  public Exp e2;
+  public VariableDeclarator vd;
   public Statement s;
 
-  public For(VariableDeclaration avd ,Exp ae, Statement as) {
-    vd = avd;  e=ae; s=as; 
+  public For(ForInit afi ,Exp ae1, Exp ae2, Statement as) {
+    fi = afi; e1=ae1; e2=ae2; s=as; 
+  }
+  
+  public For(ForInit afi, Exp ae1, VariableDeclarator avd, Statement as) {
+    fi = afi; e1=ae1; vd=avd; s=as; 
   }
 
   public void accept(Visitor v) {

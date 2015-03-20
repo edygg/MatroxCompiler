@@ -3,13 +3,17 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Not extends LogicalExp {
-  public Exp e;
-  
-  public Not(Exp ae) {
-    e=ae; 
+public class ForInit {
+  public VariableDeclaration vdn;  
+  public VariableDeclarator vd;
+
+  public ForInit(VariableDeclaration avdn){
+    vdn=avdn;  
   }
 
+  public ForInit(VariableDeclarator avd) {
+    vd=avd; 
+  }
   public void accept(Visitor v) {
     v.visit(this);
   }
@@ -18,3 +22,4 @@ public class Not extends LogicalExp {
     return v.visit(this);
   }
 }
+

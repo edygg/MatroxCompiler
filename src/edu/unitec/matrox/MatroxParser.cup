@@ -74,7 +74,7 @@ program ::= function_declarations
 ;
 
 statements ::= statement statements
-            | /* Lambda */
+            | /* Lambda */            
 ;
 
 
@@ -163,7 +163,6 @@ switch_case_exp_list ::= exp:e COMMA switch_case_exp_list
                         | exp:e
 ;
 
-
 if_statement ::= IF LPAR exp:e RPAR statements END
                 | IF LPAR exp:e RPAR statements ELSE statements END
                 | IF LPAR exp:e RPAR statements else_if_statements END
@@ -206,8 +205,8 @@ type ::= INTEGER
         | STRING
 ;
 
-for_init ::= variable_declaration
-            | variable_declarator
+for_init ::= variable_declaration 
+            | variable_declarator  
 ;
 
 for_statement ::= FOR LPAR for_init SEMICOLON exp SEMICOLON exp RPAR statements END

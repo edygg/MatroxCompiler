@@ -49,4 +49,28 @@ public interface Visitor {
   public void visit(VariableDeclaration n);
   public void visit(VariableDeclarations n);
   public void visit(While n); 
+  public void visit(NumericExp n);
+  public void visit(Umin n);
+  public void visit(Uprinc n);
+  public void visit(Uprdec n);
+  public void visit(Upinc n);
+  public void visit(Updec n);
+  public void visit(AddAssign n);
+  public void visit(MinAssign n);
+  public void visit(MulAssign n);
+  public void visit(DivAssign n);
+  public void visit(BooleanExp n);
+  public void visit(LogicalExp n);
+  public void visit(LiteralExp n);
+  public void visit(LParExpRPar n);
+  public void visit(VariableDeclarator n);
+  public void visit(VariableDeclarators n);
+  public void visit(ForInit n);
+  public void visit(SwitchCaseExpList n);
+  public void visit(SwitchCaseStatement n);
+  public void visit(SwitchCaseStatements n);
+  public void visit(SwitchStatement n);
+  public void visit(Return n);
+  public void visit(Read n);
+  public void visit(Write n);
 }
