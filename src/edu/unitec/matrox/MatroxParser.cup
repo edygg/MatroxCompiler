@@ -1,6 +1,6 @@
 package edu.unitec.matrox;
 
-import edu.unitec.ast;
+import edu.unitec.ast.*;
 import java.util.*;
 import java.io.*;
 import java_cup.runtime.*;
@@ -58,7 +58,34 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal program, statements, statement, exp, literal_exp, numeric_exp, boolean_exp, logical_exp, while_statement, switch_statement, switch_case_statements, switch_case_statement, switch_case_exp_list, if_statement, else_if_statements, else_if_statement, variable_declaration, variable_declarators, variable_declarator, parameters, parameter, arguments, type, for_init, for_statement, function_declarations, function_declaration, function_call; 
+non terminal Program program;
+non terminal List<Statements> statements;
+non terminal Statement statement;
+non terminal Exp exp; 
+non terminal LiteralExp literal_exp;
+non terminal NumericExp numeric_exp;
+non terminal BooleanExp boolean_exp;
+non terminal LogicalExp logical_exp; 
+non terminal While while_statement; 
+non terminal SwitchStatement switch_statement; 
+non terminal SwitchCaseStatements switch_case_statements; 
+non terminal SwitchCaseStatement switch_case_statement; 
+non terminal SwitchCaseExpList switch_case_exp_list; 
+non terminal If if_statement; 
+non terminal else_if_statements;  //---------
+non terminal else_if_statement;   //---------
+non terminal  VariableDeclaration variable_declaration; 
+non terminal List<VariableDeclarators> variable_declarators; 
+non terminal VariableDeclarator variable_declarator; 
+non terminal List<Parameters> parameters; 
+non terminal Parameter parameter; 
+non terminal List<Arguments> arguments; 
+non terminal Type type; 
+non terminal ForInit for_init; 
+non terminal For for_statement; 
+non terminal List<FunctionDeclarations> function_declarations; 
+non terminal FunctionDeclaration function_declaration; 
+non terminal FunctionCall function_call; 
 
 /* Precedences */
 precedence right ASSIGN, ASSIGNADD, ASSIGNMIN, ASSIGNMUL, ASSIGNDIV;
@@ -71,11 +98,11 @@ precedence right UMIN, NOT;
 precedence right UPINC, UPDEC;
 precedence nonassoc ELSE;
 
-program ::= function_declarations
+program ::= function_declarations:fds      
 ;
 
-statements ::= statement statements
-            | /* Lambda */            
+statements ::= statement:s statements:ss    
+            | /* Lambda */                 
 ;
 
 
@@ -92,58 +119,58 @@ statement ::= if_statement
             | error:e
 ;
 
-exp ::= numeric_exp:e
-        | boolean_exp:e
-        | logical_exp:e
-        | literal_exp:e
+exp ::= numeric_exp:e                           {: RESULT = e; :}
+        | boolean_exp:e                         {: RESULT = e; :}
+        | logical_exp:e                         {: RESULT = e; :}    
+        | literal_exp:e                         {: RESULT = e; :}
         | function_call:e
-        | IDENTIFIER:i
-        | LPAR exp:e RPAR
+        | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
+        | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}    
 ;
 
-literal_exp ::= INTNUMBER:i
-                | DOUBLENUMBER:d
-                | STRINGCONTENT:s
-                | CHARCONTENT:c
+literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
+                | DOUBLENUMBER:d                {: RESULT = new DoubleLiteral(d); :}
+                | STRINGCONTENT:s               {: RESULT = new StringLiteral(s); :}
+                | CHARCONTENT:c                 {: RESULT = new CharLiteral(c); :}
 ;
 
-numeric_exp ::= MIN exp:e
+numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 %prec UMIN
-                //| ADD ADD exp:e
+                //| ADD ADD exp:e               {: RESULT = new Uprinc(e); :}
                 //%prec UPRINC
-                //| MIN MIN exp:e
+                //| MIN MIN exp:e               {: RESULT = new Uprdec(e); :}
                 //%prec UPRDEC
-                | exp:e ADD ADD
-                %prec UPINC
-                | exp:e MIN MIN
-                %prec UPDEC
-                | exp:e1 ADD exp:e2
-                | exp:e1 ADD ASSIGN exp:e2
+                | exp:e ADD ADD                 {: RESULT = new Upinc(e); :}
+                %prec UPINC                     
+                | exp:e MIN MIN                 {: RESULT = new Updec(e); :}               
+                %prec UPDEC                     
+                | exp:e1 ADD exp:e2             {: RESULT = new Add(e1, e2); :}
+                | exp:e1 ADD ASSIGN exp:e2      {: RESULT = new AddAssign(e1,e2); :}
                 %prec ASSIGNADD
-                | exp:e1 MIN exp:e2
-                | exp:e1 MIN ASSIGN exp:e2
+                | exp:e1 MIN exp:e2             {: RESULT = new Min(e1,e2); :}
+                | exp:e1 MIN ASSIGN exp:e2      {: RESULT = new MinAssign(e1,e2); :}
                 %prec ASSIGNMIN
-                | exp:e1 MUL exp:e2
-                | exp:e1 MUL ASSIGN exp:e2
+                | exp:e1 MUL exp:e2             {: RESULT = new Mul(e1,e2); :}
+                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); :}    
                 %prec ASSIGNMUL
-                | exp:e1 DIV exp:e2
-                | exp:e1 DIV ASSIGN exp:e2
+                | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); :}
+                | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); :}
                 %prec ASSIGNDIV
 ;
 
-boolean_exp ::= exp:e1 GREATER exp:e2
-            | exp:e1 LESS exp:e2
-            | exp:e1 GREATEREQ exp:e2
-            | exp:e1 LESSEQ exp:e2
-            | exp:e1 EQU exp:e2
-            | exp:e1 NEQ exp:e2
+boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); :}
+            | exp:e1 LESS exp:e2                {: RESULT = new Less(e1,e2); :}
+            | exp:e1 GREATEREQ exp:e2           {: RESULT = new GreaterEq(e1,e2); :}
+            | exp:e1 LESSEQ exp:e2              {: RESULT = new LessEq(e1,e2); :}
+            | exp:e1 EQU exp:e2                 {: RESULT = new Equ(e1,e2); :}
+            | exp:e1 NEQ exp:e2                 {: RESULT = new Neq(e1,e2); :}
 ;
 
-logical_exp ::= NOT exp:e
-           | exp:e1 OR exp:e2
-           | exp:e1 AND exp:e2
-           | TRUE
-           | FALSE
+logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
+           | exp:e1 OR exp:e2                   {: RESULT = new Or(e1,e2); :}
+           | exp:e1 AND exp:e2                  {: RESULT = new And(e1,e2); :}
+           | TRUE                               {: RESULT = new True(); :}
+           | FALSE                              {: RESULT = new False(); :}
 ;
 
 while_statement ::= WHILE LPAR exp:e RPAR statements END

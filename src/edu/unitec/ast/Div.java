@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Div extends Exp {
+public class Div extends NumericExp {
   public Exp e1,e2;
   
   public Div(Exp ae1, Exp ae2) { 

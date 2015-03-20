@@ -2,24 +2,28 @@ package edu.unitec.visitor;
 
 import edu.unitec.ast.*;
 
-/*
-public class PrettyPrintVisitor implements Visitor {
+
+public abstract class PrettyPrintVisitor implements Visitor {
 
   // MainClass m;
-  // ClassDeclList cl;
+  //FunctionDeclarations
   public void visit(Program n) {
     n.m.accept(this);
-    for ( int i = 0; i < n.cl.size(); i++ ) {
+    
+    for ( int i = 0; i < n.m.ss.size(); i++ ) {
         System.out.println();
-        n.cl.elementAt(i).accept(this);
+        n.m.ss.elementAt(i).accept(this);
     }
   }
   
+}
+  
+  /*
   // Identifier i1,i2;
   // Statement s;
   public void visit(MainClass n) {
     System.out.print("class ");
-    n.i1.accept(this);
+    n.ss.accept(this);
     System.out.println(" {");
     System.out.print("  public static void main (String [] ");
     n.i2.accept(this);
@@ -30,48 +34,7 @@ public class PrettyPrintVisitor implements Visitor {
     System.out.println("}");
   }
 
-  // Identifier i;
-  // VarDeclList vl;
-  // MethodDeclList ml;
-  public void visit(ClassDeclSimple n) {
-    System.out.print("class ");
-    n.i.accept(this);
-    System.out.println(" { ");
-    for ( int i = 0; i < n.vl.size(); i++ ) {
-        System.out.print("  ");
-        n.vl.elementAt(i).accept(this);
-        if ( i+1 < n.vl.size() ) { System.out.println(); }
-    }
-    for ( int i = 0; i < n.ml.size(); i++ ) {
-        System.out.println();
-        n.ml.elementAt(i).accept(this);
-    }
-    System.out.println();
-    System.out.println("}");
-  }
- 
-  // Identifier i;
-  // Identifier j;
-  // VarDeclList vl;
-  // MethodDeclList ml;
-  public void visit(ClassDeclExtends n) {
-    System.out.print("class ");
-    n.i.accept(this);
-    System.out.println(" extends ");
-    n.j.accept(this);
-    System.out.println(" { ");
-    for ( int i = 0; i < n.vl.size(); i++ ) {
-        System.out.print("  ");
-        n.vl.elementAt(i).accept(this);
-        if ( i+1 < n.vl.size() ) { System.out.println(); }
-    }
-    for ( int i = 0; i < n.ml.size(); i++ ) {
-        System.out.println();
-        n.ml.elementAt(i).accept(this);
-    }
-    System.out.println();
-    System.out.println("}");
-  }
+
 
   // Type t;
   // Identifier i;
@@ -262,8 +225,8 @@ public class PrettyPrintVisitor implements Visitor {
   // Exp e;
   // Identifier i;
   // ExpList el;
-  public void visit(Call n) {
-    n.e.accept(this);
+  public void visit(FunctionCall n) {
+    n.i.accept(this);
     System.out.print(".");
     n.i.accept(this);
     System.out.print("(");
@@ -292,24 +255,6 @@ public class PrettyPrintVisitor implements Visitor {
     System.out.print(n.s);
   }
 
-  public void visit(This n) {
-    System.out.print("this");
-  }
-
-  // Exp e;
-  public void visit(NewArray n) {
-    System.out.print("new int [");
-    n.e.accept(this);
-    System.out.print("]");
-  }
-
-  // Identifier i;
-  public void visit(NewObject n) {
-    System.out.print("new ");
-    System.out.print(n.i.s);
-    System.out.print("()");
-  }
-
   // Exp e;
   public void visit(Not n) {
     System.out.print("!");
@@ -321,5 +266,6 @@ public class PrettyPrintVisitor implements Visitor {
     System.out.print(n.s);
   }
 }
+
 
 */
