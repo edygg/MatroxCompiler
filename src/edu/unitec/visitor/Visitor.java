@@ -73,4 +73,7 @@ public interface Visitor {
   public void visit(Return n);
   public void visit(Read n);
   public void visit(Write n);
+  public void visit(Arguments n);
+  public void visit(Program n);
+  public void visit(FunctionCall n);
 }

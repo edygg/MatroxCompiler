@@ -3,12 +3,12 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class MainClass {
+public class FunctionCall extends Exp {
+  public Identifier i;
+  public Arguments as;
 
-  public Statements ss;
-
-  public MainClass(Statements ass) {
-   ss=ass;
+  public FunctionCall(Identifier ai, Arguments aas) {
+    i=ai; as=aas; 
   }
 
   public void accept(Visitor v) {

@@ -71,4 +71,7 @@ public interface TypeVisitor {
   public Type visit(Return n);
   public Type visit(Read n);
   public Type visit(Write n);
+  public Type visit(Arguments n);
+  public Type visit(Program n);
+  public Type visit(FunctionCall n);
 }

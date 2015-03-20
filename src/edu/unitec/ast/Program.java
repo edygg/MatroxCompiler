@@ -3,12 +3,16 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class MainClass {
-
-  public Statements ss;
-
-  public MainClass(Statements ass) {
-   ss=ass;
+public class Program {
+  public MainClass m;
+  public FunctionDeclarations fds;
+  
+  public Program(MainClass am) {
+    m=am; 
+  }
+  
+  public Program(FunctionDeclarations afds){
+      fds=afds;
   }
 
   public void accept(Visitor v) {
