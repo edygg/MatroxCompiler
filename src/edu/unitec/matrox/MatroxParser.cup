@@ -59,7 +59,7 @@ terminal String STRINGCONTENT;
 
 /* Non terminals */
 non terminal Program program;
-non terminal List<Statements> statements;
+non terminal List<Statement> statements;
 non terminal Statement statement;
 non terminal Exp exp; 
 non terminal LiteralExp literal_exp;
@@ -74,16 +74,16 @@ non terminal SwitchCaseExpList switch_case_exp_list;
 non terminal If if_statement; 
 non terminal else_if_statements;  //---------
 non terminal else_if_statement;   //---------
-non terminal  VariableDeclaration variable_declaration; 
-non terminal List<VariableDeclarators> variable_declarators; 
+non terminal VariableDeclaration variable_declaration; 
+non terminal List<VariableDeclarator> variable_declarators; 
 non terminal VariableDeclarator variable_declarator; 
-non terminal List<Parameters> parameters; 
+non terminal List<Parameter> parameters; 
 non terminal Parameter parameter; 
 non terminal List<Arguments> arguments; 
 non terminal Type type; 
 non terminal ForInit for_init; 
 non terminal For for_statement; 
-non terminal List<FunctionDeclarations> function_declarations; 
+non terminal List<FunctionDeclaration> function_declarations; 
 non terminal FunctionDeclaration function_declaration; 
 non terminal FunctionCall function_call; 
 
@@ -215,22 +215,22 @@ variable_declarators ::= variable_declarator COMMA variable_declarators
 variable_declarator ::= IDENTIFIER ASSIGN exp:e
 ;
 
-parameters ::= parameter COMMA parameters
-        | parameter
+parameters ::= parameter:p COMMA parameters:ps        {: ps.add(p); RESULT = ps;  :}    
+        | parameter:p                                 // {: RESULT = p; :}  
 ;
 
-parameter ::= type IDENTIFIER
+parameter ::= type:t IDENTIFIER:i                     {: RESULT = new Parameter(t, new Identifier(i)); :}
 ;
 
-arguments ::= exp COMMA arguments
+arguments ::= exp COMMA arguments                     
             | exp
 ;
 
-type ::= INTEGER
-        | CHAR
-        | BOOLEAN
-        | DOUBLE
-        | STRING
+type ::= INTEGER                                      {: RESULT = new IntegerType(); :}
+        | CHAR                                        {: RESULT = new IntegerType(); :}  
+        | BOOLEAN                                     {: RESULT = new BooleanType(); :}  
+        | DOUBLE                                      {: RESULT = new DoubleType(); :}  
+        | STRING                                      {: RESULT = new StringType(); :}  
 ;
 
 for_init ::= variable_declaration 
@@ -252,5 +252,5 @@ function_declaration ::= FUNCTION type IDENTIFIER LBRACK parameters RBRACK state
            | FUNCTION INTEGER MAIN LBRACK RBRACK statements END
 ;
 
-function_call ::= IDENTIFIER LBRACK arguments RBRACK
+function_call ::= IDENTIFIER:i LBRACK arguments:a RBRACK   
 ;
