@@ -76,4 +76,6 @@ public interface Visitor {
   public void visit(Arguments n);
   public void visit(Program n);
   public void visit(FunctionCall n);
+  public void visit(ElseIfStatement n);
+  public void visit(ElseIfStatements n);
 }

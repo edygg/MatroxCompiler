@@ -248,7 +248,7 @@ function_declaration ::= FUNCTION type:t IDENTIFIER:i LBRACK parameters:ps RBRAC
            | FUNCTION type:t IDENTIFIER:i LBRACK RBRACK statements:stmts END                                            {: RESULT = new FunctionDeclaration(t, new Identifier(i), null, stmts); :}
            | FUNCTION VOID IDENTIFIER:i LBRACK RBRACK statements:stmts END                                              {: RESULT = new FunctionDeclaration(new Identifier(i), null, stmts); :}
            | FUNCTION VOID IDENTIFIER:i LBRACK parameters:ps RBRACK statements:stmts END                                {: RESULT = new FunctionDeclaration(new Identifier(i), ps, stmts); :}
-           | FUNCTION INTEGER MAIN LBRACK RBRACK statements:stmts END                                                    {: RESULT = new FunctionDeclaration(new IntegerType(), new Identifier("main"), null, stmts); :}
+           | FUNCTION INTEGER MAIN LBRACK RBRACK statements:stmts END                                                   {: RESULT = new FunctionDeclaration(new IntegerType(), new Identifier("main"), null, stmts); :}
 ;
 
 function_call ::= IDENTIFIER:i LBRACK arguments:args RBRACK                                                             {: RESULT = new FunctionCall(new Identifier(i), args); :}                                                                {:  :}

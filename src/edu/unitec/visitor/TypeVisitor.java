@@ -74,4 +74,6 @@ public interface TypeVisitor {
   public Type visit(Arguments n);
   public Type visit(Program n);
   public Type visit(FunctionCall n);
+  public Type visit(ElseIfStatement n);
+  public Type visit(ElseIfStatements n);
 }
