@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Min extends Exp {
+public class Min extends NumericExp {
   public Exp e1,e2;
   
   public Min(Exp ae1, Exp ae2) { 

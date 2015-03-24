@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Mul extends Exp {
+public class Mul extends NumericExp {
   public Exp e1,e2;
   
   public Mul(Exp ae1, Exp ae2) { 

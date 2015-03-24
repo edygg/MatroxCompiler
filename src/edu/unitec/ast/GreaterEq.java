@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class GreaterEq extends Exp {
+public class GreaterEq extends BooleanExp {
   public Exp e1,e2;
   
   public GreaterEq(Exp ae1, Exp ae2) {

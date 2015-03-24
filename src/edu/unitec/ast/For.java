@@ -4,15 +4,18 @@ import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
 public class For extends Statement {
-  public VariableDeclaration vd;  
-  public Exp e;
+  public ForInit fi;
+  public Exp e1;
+  public Exp e2;
+  public VariableDeclarator vd;
   public Statements s;
 
-  //Este hay que hacer el for_init
-  //FOR LPAR for_init SEMICOLON exp SEMICOLON exp RPAR statements END
-  //FOR LPAR for_init SEMICOLON exp SEMICOLON variable_declarator RPAR statements END
-  public For(VariableDeclaration avd ,Exp ae, Statements as) {
-    vd = avd;  e=ae; s=as; 
+  public For(ForInit afi ,Exp ae1, Exp ae2, Statements as) {
+    fi = afi; e1=ae1; e2=ae2; s=as; 
+  }
+  
+  public For(ForInit afi, Exp ae1, VariableDeclarator avd, Statements as) {
+    fi = afi; e1=ae1; vd=avd; s=as; 
   }
 
   public void accept(Visitor v) {

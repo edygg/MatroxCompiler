@@ -3,11 +3,12 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Not extends LogicalExp {
+public class VariableDeclarator extends Statement{
+  public Identifier i;
   public Exp e;
   
-  public Not(Exp ae) {
-    e=ae; 
+  public VariableDeclarator(Identifier ai, Exp ae) {
+    i = ai; e = ae;
   }
 
   public void accept(Visitor v) {

@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Identifier {
+public class Identifier extends Exp {
   public String s;
 
   public Identifier(String as) { 

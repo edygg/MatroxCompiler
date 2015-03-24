@@ -3,11 +3,12 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Not extends LogicalExp {
-  public Exp e;
-  
-  public Not(Exp ae) {
-    e=ae; 
+public class FunctionCall extends Exp {
+  public Identifier i;
+  public Arguments as;
+
+  public FunctionCall(Identifier ai, Arguments aas) {
+    i=ai; as=aas; 
   }
 
   public void accept(Visitor v) {

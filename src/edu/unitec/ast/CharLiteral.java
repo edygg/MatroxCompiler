@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class CharLiteral extends Exp {
+public class CharLiteral extends LiteralExp {
   public char i;
 
   public CharLiteral(char ai) {

@@ -3,7 +3,7 @@ package edu.unitec.ast;
 import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
-public class Neq extends Exp {
+public class Neq extends BooleanExp {
   public Exp e1,e2;
   
   public Neq(Exp ae1, Exp ae2) {

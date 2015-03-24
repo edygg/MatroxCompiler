@@ -1,6 +1,6 @@
 package edu.unitec.matrox;
 
-import edu.unitec.ast;
+import edu.unitec.ast.*;
 import java.util.*;
 import java.io.*;
 import java_cup.runtime.*;
@@ -58,7 +58,34 @@ terminal Character CHARCONTENT;
 terminal String STRINGCONTENT;
 
 /* Non terminals */
-non terminal program, statements, statement, exp, literal_exp, numeric_exp, boolean_exp, logical_exp, while_statement, switch_statement, switch_case_statements, switch_case_statement, switch_case_exp_list, if_statement, else_if_statements, else_if_statement, variable_declaration, variable_declarators, variable_declarator, parameters, parameter, arguments, type, for_init, for_statement, function_declarations, function_declaration, function_call; 
+non terminal Program program;
+non terminal Statements statements;
+non terminal Statement statement;
+non terminal Exp exp; 
+non terminal LiteralExp literal_exp;
+non terminal NumericExp numeric_exp;
+non terminal BooleanExp boolean_exp;
+non terminal LogicalExp logical_exp; 
+non terminal While while_statement; 
+non terminal SwitchStatement switch_statement; 
+non terminal SwitchCaseStatements switch_case_statements; 
+non terminal SwitchCaseStatement switch_case_statement; 
+non terminal SwitchCaseExpList switch_case_exp_list; 
+non terminal If if_statement; 
+non terminal else_if_statements;  //---------
+non terminal else_if_statement;   //---------
+non terminal VariableDeclaration variable_declaration; 
+non terminal VariableDeclarators variable_declarators; 
+non terminal VariableDeclarator variable_declarator; 
+non terminal Parameters parameters; 
+non terminal Parameter parameter; 
+non terminal Arguments arguments; 
+non terminal Type type; 
+non terminal ForInit for_init; 
+non terminal For for_statement; 
+non terminal FunctionDeclarations function_declarations; 
+non terminal FunctionDeclaration function_declaration; 
+non terminal FunctionCall function_call; 
 
 /* Precedences */
 precedence right ASSIGN, ASSIGNADD, ASSIGNMIN, ASSIGNMUL, ASSIGNDIV;
@@ -71,103 +98,101 @@ precedence right UMIN, NOT;
 precedence right UPINC, UPDEC;
 precedence nonassoc ELSE;
 
-program ::= function_declarations
+program ::= function_declarations:fdons           {: RESULT = new Program(fdons); :}      
 ;
 
-statements ::= statement statements
-            | /* Lambda */
+statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RESULT = stmts; :}    
+            | /* Lambda */                        {: RESULT = new Statements(); :}
 ;
 
 
-statement ::= if_statement
-            | while_statement
-            | for_statement
-            | switch_statement
-            | variable_declaration
-            | variable_declarator
-            | RETURN exp
-            | READ exp
-            | WRITE exp
-            | exp:e
-            | error:e
+statement ::= if_statement:istmt                {: RESULT = istmt; :}
+            | while_statement:wstmt             {: RESULT = wstmt; :}           
+            | for_statement:fstmt               {: RESULT = fstmt; :}                     
+            | switch_statement:sstmt            {: RESULT = sstmt; :}
+            | variable_declaration:vdon         {: RESULT = vdon; :}
+            | variable_declarator:vdor          {: RESULT = vdor; :}
+            | RETURN exp:e                      {: RESULT = new Return(e);  :}
+            | READ exp:e                        {: RESULT = new Read(e); :}
+            | WRITE exp:e                       {: RESULT = new Write(e); :}
+            | exp:e                             {: RESULT = e ; :}
 ;
 
-exp ::= numeric_exp:e
-        | boolean_exp:e
-        | logical_exp:e
-        | literal_exp:e
-        | function_call:e
-        | IDENTIFIER:i
-        | LPAR exp:e RPAR
+exp ::= numeric_exp:e                           {: RESULT = e; :}
+        | boolean_exp:e                         {: RESULT = e; :}
+        | logical_exp:e                         {: RESULT = e; :}    
+        | literal_exp:e                         {: RESULT = e; :}
+        | function_call:fc                      {: RESULT = fc; :}
+        | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
+        | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}    
 ;
 
-literal_exp ::= INTNUMBER:i
-                | DOUBLENUMBER:d
-                | STRINGCONTENT:s
-                | CHARCONTENT:c
+literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
+                | DOUBLENUMBER:d                {: RESULT = new DoubleLiteral(d); :}
+                | STRINGCONTENT:s               {: RESULT = new StringLiteral(s); :}
+                | CHARCONTENT:c                 {: RESULT = new CharLiteral(c); :}
 ;
 
-numeric_exp ::= MIN exp:e
+numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 %prec UMIN
-                //| ADD ADD exp:e
+                //| ADD ADD exp:e               {: RESULT = new Uprinc(e); :}
                 //%prec UPRINC
-                //| MIN MIN exp:e
+                //| MIN MIN exp:e               {: RESULT = new Uprdec(e); :}
                 //%prec UPRDEC
-                | exp:e ADD ADD
-                %prec UPINC
-                | exp:e MIN MIN
-                %prec UPDEC
-                | exp:e1 ADD exp:e2
-                | exp:e1 ADD ASSIGN exp:e2
+                | exp:e ADD ADD                 {: RESULT = new Upinc(e); :}
+                %prec UPINC                     
+                | exp:e MIN MIN                 {: RESULT = new Updec(e); :}               
+                %prec UPDEC                     
+                | exp:e1 ADD exp:e2             {: RESULT = new Add(e1, e2); :}
+                | exp:e1 ADD ASSIGN exp:e2      {: RESULT = new AddAssign(e1,e2); :}
                 %prec ASSIGNADD
-                | exp:e1 MIN exp:e2
-                | exp:e1 MIN ASSIGN exp:e2
+                | exp:e1 MIN exp:e2             {: RESULT = new Min(e1,e2); :}
+                | exp:e1 MIN ASSIGN exp:e2      {: RESULT = new MinAssign(e1,e2); :}
                 %prec ASSIGNMIN
-                | exp:e1 MUL exp:e2
-                | exp:e1 MUL ASSIGN exp:e2
+                | exp:e1 MUL exp:e2             {: RESULT = new Mul(e1,e2); :}
+                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); :}    
                 %prec ASSIGNMUL
-                | exp:e1 DIV exp:e2
-                | exp:e1 DIV ASSIGN exp:e2
+                | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); :}
+                | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); :}
                 %prec ASSIGNDIV
 ;
 
-boolean_exp ::= exp:e1 GREATER exp:e2
-            | exp:e1 LESS exp:e2
-            | exp:e1 GREATEREQ exp:e2
-            | exp:e1 LESSEQ exp:e2
-            | exp:e1 EQU exp:e2
-            | exp:e1 NEQ exp:e2
+boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); :}
+            | exp:e1 LESS exp:e2                {: RESULT = new Less(e1,e2); :}
+            | exp:e1 GREATEREQ exp:e2           {: RESULT = new GreaterEq(e1,e2); :}
+            | exp:e1 LESSEQ exp:e2              {: RESULT = new LessEq(e1,e2); :}
+            | exp:e1 EQU exp:e2                 {: RESULT = new Equ(e1,e2); :}
+            | exp:e1 NEQ exp:e2                 {: RESULT = new Neq(e1,e2); :}
 ;
 
-logical_exp ::= NOT exp:e
-           | exp:e1 OR exp:e2
-           | exp:e1 AND exp:e2
-           | TRUE
-           | FALSE
+logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
+           | exp:e1 OR exp:e2                   {: RESULT = new Or(e1,e2); :}
+           | exp:e1 AND exp:e2                  {: RESULT = new And(e1,e2); :}
+           | TRUE                               {: RESULT = new True(); :}
+           | FALSE                              {: RESULT = new False(); :}
 ;
 
-while_statement ::= WHILE LPAR exp:e RPAR statements END
+while_statement ::= WHILE LPAR exp:e RPAR statements:stmts END                              {: RESULT = new While(e, stmts); :}
 ;
 
-switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements END
+switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END              {: RESULT = new SwitchStatement(e, scstmts); :}
 ;
 
-switch_case_statements ::= switch_case_statement switch_case_statements
-                        | switch_case_statement
+switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.addElement(scstmt); RESULT = scstmts; :}
+                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); RESULT.addElement(scstmt);  :}
 ;
 
-switch_case_statement ::= CASE switch_case_exp_list statements END
-                        | CASE DEFAULT statements END
+switch_case_statement ::= CASE switch_case_exp_list:scexpl statements:stmts END             {: RESULT = new SwitchCaseStatement(scexpl, stmts); :}
+                        | CASE DEFAULT statements:stmts END                                 {: RESULT = new SwitchCaseStatement(stmts); :}
 ;
 
-switch_case_exp_list ::= exp:e COMMA switch_case_exp_list
-                        | exp:e
+switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                            {: scexpl.addElement(e); RESULT = scexpl;  :}
+                        | exp:e                                                             {: RESULT = new SwitchCaseExpList(); RESULT.addElement(e); :}
 ;
 
-
-if_statement ::= IF LPAR exp:e RPAR statements END
-                | IF LPAR exp:e RPAR statements ELSE statements END
-                | IF LPAR exp:e RPAR statements else_if_statements END
+if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                          
+                | IF LPAR exp:e RPAR statements:stmts1 ELSE statements:stmts2 END
+                | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:stmts2 END
                 | IF LPAR exp:e RPAR statements else_if_statements ELSE statements END
 ;
 
@@ -178,53 +203,53 @@ else_if_statements ::= else_if_statement else_if_statements
 else_if_statement ::= ELSEIF LPAR exp RPAR statements
 ;
 
-variable_declaration ::= type variable_declarators
-                        | type IDENTIFIER
+variable_declaration ::= type:t variable_declarators:vdors                                  {: RESULT = new VariableDeclaration(t, vdors); :}
+                        | type:t IDENTIFIER:i                                               {: RESULT = new VariableDeclaration(t, new Identifier(i)); :}
 ;
 
-variable_declarators ::= variable_declarator COMMA variable_declarators
-                        | variable_declarator
+variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.addElement(vdor); RESULT = vdors; :}
+                        | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.addElement(vdor); :}               
 ;
 
-variable_declarator ::= IDENTIFIER ASSIGN exp:e
+variable_declarator ::= IDENTIFIER:i ASSIGN exp:e                                           {: RESULT = new VariableDeclarator(new Identifier(i), e); :}
 ;
 
-parameters ::= parameter COMMA parameters
-        | parameter
+parameters ::= parameter:p COMMA parameters:ps                                              {: ps.addElement(p); RESULT = ps; :}    
+        | parameter:p                                                                       {: RESULT = new Parameters(); RESULT.addElement(p); :}  
 ;
 
-parameter ::= type IDENTIFIER
+parameter ::= type:t IDENTIFIER:i                                                           {: RESULT = new Parameter(t, new Identifier(i)); :}
 ;
 
-arguments ::= exp COMMA arguments
-            | exp
+arguments ::= exp:e COMMA arguments:args                                                    {: args.addElement(e); RESULT = args; :}
+            | exp:e                                                                         {: RESULT = new Arguments(); RESULT.addElement(e); :}
 ;
 
-type ::= INTEGER
-        | CHAR
-        | BOOLEAN
-        | DOUBLE
-        | STRING
+type ::= INTEGER                                                                            {: RESULT = new IntegerType(); :}
+        | CHAR                                                                              {: RESULT = new CharType(); :}  
+        | BOOLEAN                                                                           {: RESULT = new BooleanType(); :}  
+        | DOUBLE                                                                            {: RESULT = new DoubleType(); :}  
+        | STRING                                                                            {: RESULT = new StringType(); :}  
 ;
 
-for_init ::= variable_declaration
-            | variable_declarator
+for_init ::= variable_declaration:vdon                                                      {: RESULT = new ForInit(vdon); :}
+            | variable_declarator:vdor                                                      {: RESULT = new ForInit(vdor); :}
 ;
 
-for_statement ::= FOR LPAR for_init SEMICOLON exp SEMICOLON exp RPAR statements END
-                | FOR LPAR for_init SEMICOLON exp SEMICOLON variable_declarator RPAR statements END
+for_statement ::= FOR LPAR for_init:fi SEMICOLON exp:e1 SEMICOLON exp:e2 RPAR statements:stmts END                      {: RESULT = new For(fi, e1, e2, stmts);  :}
+                | FOR LPAR for_init:fi SEMICOLON exp:e1 SEMICOLON variable_declarator:vdor RPAR statements:stmts END    {: RESULT = new For(fi, e1, vdor, stmts); :}
 ;
 
-function_declarations ::= function_declaration function_declarations
-                        | function_declaration
+function_declarations ::= function_declaration:fdon function_declarations:fdons                                         {: fdons.addElement(fdon); RESULT = fdons; :}
+                        | function_declaration:fdon                                                                     {: RESULT = new FunctionDeclarations(); RESULT.addElement(fdon); :}
 ;
 
-function_declaration ::= FUNCTION type IDENTIFIER LBRACK parameters RBRACK statements END
-           | FUNCTION type IDENTIFIER LBRACK RBRACK statements END
-           | FUNCTION VOID IDENTIFIER LBRACK RBRACK statements END
-           | FUNCTION VOID IDENTIFIER LBRACK parameters RBRACK statements END
-           | FUNCTION INTEGER MAIN LBRACK RBRACK statements END
+function_declaration ::= FUNCTION type:t IDENTIFIER:i LBRACK parameters:ps RBRACK statements:stmts END                  {: RESULT = new FunctionDeclaration(t, new Identifier(i), ps, stmts); :}
+           | FUNCTION type:t IDENTIFIER:i LBRACK RBRACK statements:stmts END                                            {: RESULT = new FunctionDeclaration(t, new Identifier(i), null, stmts); :}
+           | FUNCTION VOID IDENTIFIER:i LBRACK RBRACK statements:stmts END                                              {: RESULT = new FunctionDeclaration(new Identifier(i), null, stmts); :}
+           | FUNCTION VOID IDENTIFIER:i LBRACK parameters:ps RBRACK statements:stmts END                                {: RESULT = new FunctionDeclaration(new Identifier(i), ps, stmts); :}
+           | FUNCTION INTEGER MAIN LBRACK RBRACK statements:stmts END                                                    {: RESULT = new FunctionDeclaration(new IntegerType(), new Identifier("main"), null, stmts); :}
 ;
 
-function_call ::= IDENTIFIER LBRACK arguments RBRACK
+function_call ::= IDENTIFIER:i LBRACK arguments:args RBRACK                                                             {: RESULT = new FunctionCall(new Identifier(i), args); :}                                                                {:  :}
 ;
