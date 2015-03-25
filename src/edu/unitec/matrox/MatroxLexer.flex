@@ -1,7 +1,6 @@
 package edu.unitec.matrox;
 
 import java_cup.runtime.*;
-
 %%
 
 %unicode

@@ -11,7 +11,7 @@ function integer main[]
 	
 	if (test_int = 10 and true)
 		print "Es igual"
-	elseif(false)
+	elseif()
 		print "Es diferente"
 	end
 
