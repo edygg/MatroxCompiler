@@ -1,0 +1,53 @@
+# Ejemplo 1 Perimetro & Area | MatroxCompiler #
+# By Guillermo Mazzoni & Edilson Gonzalez #
+
+function integer main[]
+
+	number a<-0, b<0; 
+	character user;
+
+	print(" **** Menu **** ");
+	print("a. Perimetro");
+	print("b. Area");
+	print("Ingrese su opción: ");
+	get_value user;
+
+	switch(user)
+
+		option a
+
+			print("Ingrese el largo: ");
+			get_value a;
+			print("Ingrese el ancho: ");
+			get_value b;
+			print(Perimetro[a,b]);
+		
+
+		option b
+
+			print("Ingrese el largo: ");
+			get_value a;
+			print("Ingrese el ancho: ");
+			get_value b
+			print(Area[a,b]);
+		end
+
+		option by_default 
+
+			print("Opcion no valida");
+		end	
+	end
+
+	give_back ; 
+
+end
+
+function Perimetro [number x, number y]
+	number P <- x + y; 
+	give_back P;
+end
+
+function number [number x, number y]
+	number A <- x * y; 
+	give_back A;
+end
