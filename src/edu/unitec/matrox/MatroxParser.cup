@@ -13,15 +13,215 @@ parser code {:
       super(lex);
       lexer = lex;
     }
-    
+
     public void syntax_error(Symbol cur_token) {
         System.err.println("Syntax error at line: " + (cur_token.left + 1) + ", col: " + (cur_token.left + 1) + " at symbol: " + symbl_name_from_id(cur_token.sym));
         List<Integer> expected = expected_token_ids();
-        for (int i = 0; i < expected.size(); i++) {
-            System.err.println("\t" + symbl_name_from_id(expected.get(i)));
+        
+        if (expected.size() <= 1) {
+              String charExpected = "";
+              if (expected.get(0) == sym.ASSIGNDIV)
+                charExpected = "/<-";
+
+              if (expected.get(0) == sym.FUNCTION)
+                charExpected = "function";
+
+              if (expected.get(0) == sym.ASSIGNMIN)
+                charExpected = "-<-";
+
+              if (expected.get(0) == sym.CHAR)
+                charExpected = "character";
+
+              if (expected.get(0) == sym.CASE)
+                charExpected = "option";
+
+              if (expected.get(0) == sym.DOUBLE)
+                charExpected = "number";
+
+              if (expected.get(0) == sym.INTEGER)
+                charExpected = "integer";
+
+              if (expected.get(0) == sym.ASSIGNMUL)
+                charExpected = "*<-";
+
+              if (expected.get(0) == sym.GREATER)
+                charExpected = ">";
+
+              if (expected.get(0) == sym.ASSIGNADD)
+                charExpected = "+<-";
+
+              if (expected.get(0) == sym.LESS)
+                charExpected = "<";
+
+              if (expected.get(0) == sym.FOR)
+                charExpected = "for";
+
+              if (expected.get(0) == sym.WRITE)
+                charExpected = "print";
+
+              if (expected.get(0) == sym.AND)
+                charExpected = "and";
+
+              if (expected.get(0) == sym.NOT)
+                charExpected = "not";
+
+              if (expected.get(0) == sym.SEMICOLON)
+                charExpected = ";";
+
+              if (expected.get(0) == sym.ELSEIF)
+                charExpected = "elseif";
+
+              if (expected.get(0) == sym.RPAR)
+                charExpected = ")";
+
+              if (expected.get(0) == sym.UMIN)
+                charExpected = "-(exp)";
+
+              if (expected.get(0) == sym.OR)
+                charExpected = "or";
+
+              if (expected.get(0) == sym.COMMA)
+                charExpected = ",";
+
+              if (expected.get(0) == sym.DIV)
+                charExpected = "/";
+
+              if (expected.get(0) == sym.ASSIGN)
+                charExpected = "<-";
+
+              if (expected.get(0) == sym.LESSEQ)
+                charExpected = "<=";
+
+              if (expected.get(0) == sym.MIN)
+                charExpected = "-";
+
+              if (expected.get(0) == sym.MAIN)
+                charExpected = "main";
+
+              if (expected.get(0) == sym.IF)
+                charExpected = "if";
+
+              if (expected.get(0) == sym.UPDEC)
+                charExpected = "--";
+
+              if (expected.get(0) == sym.BOOLEAN)
+                charExpected = "boolean";
+
+              if (expected.get(0) == sym.RETURN)
+                charExpected = "return";
+
+              if (expected.get(0) == sym.TRUE)
+                charExpected = "true";
+
+              if (expected.get(0) == sym.MUL)
+                charExpected = "*";
+
+              if (expected.get(0) == sym.ADD)
+                charExpected = "+";
+
+              if (expected.get(0) == sym.NEQ)
+                charExpected = "<>";
+
+              if (expected.get(0) == sym.VOID)
+                charExpected = "void";
+
+              if (expected.get(0) == sym.LBRACK)
+                charExpected = "[";
+
+              if (expected.get(0) == sym.SWITCH)
+                charExpected = "switch";
+
+              if (expected.get(0) == sym.EQU)
+                charExpected = "=";
+
+              if (expected.get(0) == sym.ELSE)
+                charExpected = "else";
+
+              if (expected.get(0) == sym.RBRACK)
+                charExpected = "]";
+
+              if (expected.get(0) == sym.READ)
+                charExpected = "get_value";
+
+              if (expected.get(0) == sym.WHILE)
+                charExpected = "while";
+
+              if (expected.get(0) == sym.DEFAULT)
+                charExpected = "by_default";
+
+              if (expected.get(0) == sym.END)
+                charExpected = "end";
+
+              if (expected.get(0) == sym.GREATEREQ)
+                charExpected = ">=";
+
+              if (expected.get(0) == sym.LPAR)
+                charExpected = ")";
+
+              if (expected.get(0) == sym.STRING)
+                charExpected = "string";
+
+              if (expected.get(0) == sym.FALSE)
+                charExpected = "false";
+
+              if (expected.get(0) == sym.UPINC)
+                charExpected = "++";
+
+              if (expected.get(0) == sym.IDENTIFIER)
+                charExpected = "identifier";
+
+            System.err.println("\tExpected token '" + charExpected + "'");
+        } else {
+            if (cur_token.sym == sym.RPAR || cur_token.sym == sym.LPAR)
+                System.err.println("\tExpected an expression.");
+            if (cur_token.sym == sym.ADD || cur_token.sym == sym.MIN || cur_token.sym == sym.DIV || cur_token.sym == sym.MUL || cur_token.sym == sym.ASSIGNADD || cur_token.sym == sym.ASSIGNMIN || cur_token.sym == sym.ASSIGNDIV || cur_token.sym == sym.ASSIGNMUL || cur_token.sym == sym.UPDEC || cur_token.sym == sym.UPINC || cur_token.sym == sym.GREATER || cur_token.sym == sym.LESS || cur_token.sym == sym.GREATEREQ || cur_token.sym == sym.LESSEQ || cur_token.sym == sym.EQU || cur_token.sym == sym.NEQ || cur_token.sym == sym.OR || cur_token.sym == sym.AND || cur_token.sym == sym.NOT || cur_token.sym == sym.TRUE || cur_token.sym == sym.FALSE)
+                System.err.println("\tUnexpected expression.");
+            
+            if (cur_token.sym == sym.SEMICOLON)
+                System.err.println("\tCheck your expression.");
+            if (cur_token.sym == sym.IDENTIFIER) {
+                System.err.print("\tExpected type: ");
+                for (int i = 0; i < expected.size(); i++) {
+                    if (expected.get(i) == sym.VOID)
+                        System.err.print("void");
+                    
+                    if (expected.get(i) == sym.INTEGER)
+                        System.err.print("integer");
+
+                    if (expected.get(i) == sym.DOUBLE)
+                        System.err.print("double");
+                    
+                    if (expected.get(i) == sym.STRING)
+                        System.err.print("string");
+                        
+                    if (expected.get(i) == sym.BOOLEAN)
+                        System.err.print("boolean");
+
+                    if (i != expected.size() - 1)
+                        System.err.print(", ");
+                    else 
+                        System.err.println();
+                }
+            }
+            //for (int i = 0; i < expected.size(); i++) {
+            
+               //System.err.println("\t" + symbl_name_from_id(expected.get(i)));
+            //}
         }
     }
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+        System.err.println("Please check your program's syntax before line: " + (cur_token.left + 1) + ", col: " + (cur_token.left + 1));
+    }
+
+    public void report_fatal_error(String message, Object info) {
+        // Nothing
+    }
     
+    public void report_error(String message, Object info) {
+        //Nothing
+    }
+
 :};
 
 /* Types */
@@ -68,31 +268,31 @@ terminal String STRINGCONTENT;
 non terminal Program program;
 non terminal Statements statements;
 non terminal Statement statement;
-non terminal Exp exp; 
+non terminal Exp exp;
 non terminal LiteralExp literal_exp;
 non terminal NumericExp numeric_exp;
 non terminal BooleanExp boolean_exp;
-non terminal LogicalExp logical_exp; 
-non terminal While while_statement; 
-non terminal SwitchStatement switch_statement; 
-non terminal SwitchCaseStatements switch_case_statements; 
-non terminal SwitchCaseStatement switch_case_statement; 
-non terminal SwitchCaseExpList switch_case_exp_list; 
-non terminal If if_statement; 
+non terminal LogicalExp logical_exp;
+non terminal While while_statement;
+non terminal SwitchStatement switch_statement;
+non terminal SwitchCaseStatements switch_case_statements;
+non terminal SwitchCaseStatement switch_case_statement;
+non terminal SwitchCaseExpList switch_case_exp_list;
+non terminal If if_statement;
 non terminal ElseIfStatements else_if_statements;
 non terminal ElseIfStatement else_if_statement;
-non terminal VariableDeclaration variable_declaration; 
-non terminal VariableDeclarators variable_declarators; 
-non terminal VariableDeclarator variable_declarator; 
-non terminal Parameters parameters; 
-non terminal Parameter parameter; 
-non terminal Arguments arguments; 
-non terminal Type type; 
-non terminal ForInit for_init; 
-non terminal For for_statement; 
-non terminal FunctionDeclarations function_declarations; 
-non terminal FunctionDeclaration function_declaration; 
-non terminal FunctionCall function_call; 
+non terminal VariableDeclaration variable_declaration;
+non terminal VariableDeclarators variable_declarators;
+non terminal VariableDeclarator variable_declarator;
+non terminal Parameters parameters;
+non terminal Parameter parameter;
+non terminal Arguments arguments;
+non terminal Type type;
+non terminal ForInit for_init;
+non terminal For for_statement;
+non terminal FunctionDeclarations function_declarations;
+non terminal FunctionDeclaration function_declaration;
+non terminal FunctionCall function_call;
 
 /* Precedences */
 precedence right ASSIGN, ASSIGNADD, ASSIGNMIN, ASSIGNMUL, ASSIGNDIV;
@@ -109,14 +309,14 @@ program ::= function_declarations:fdons           {: RESULT = new Program(fdons)
             | /* Lambda */
 ;
 
-statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RESULT = stmts; :}    
+statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RESULT = stmts; :}
             | /* Lambda */                        {: RESULT = new Statements(); :}
 ;
 
 
 statement ::= if_statement:istmt                    {: RESULT = istmt; :}
-            | while_statement:wstmt                 {: RESULT = wstmt; :}           
-            | for_statement:fstmt                   {: RESULT = fstmt; :}                     
+            | while_statement:wstmt                 {: RESULT = wstmt; :}
+            | for_statement:fstmt                   {: RESULT = fstmt; :}
             | switch_statement:sstmt                {: RESULT = sstmt; :}
             | variable_declaration:vdon SEMICOLON   {: RESULT = vdon; :}
             | variable_declarator:vdor SEMICOLON    {: RESULT = vdor; :}
@@ -125,16 +325,16 @@ statement ::= if_statement:istmt                    {: RESULT = istmt; :}
             | WRITE exp:e SEMICOLON                 {: RESULT = new Write(e); :}
             | exp:e SEMICOLON                       {: RESULT = e ; :}
             | SEMICOLON
-            | error SEMICOLON
 ;
 
 exp ::= numeric_exp:e                           {: RESULT = e; :}
         | boolean_exp:e                         {: RESULT = e; :}
-        | logical_exp:e                         {: RESULT = e; :}    
+        | logical_exp:e                         {: RESULT = e; :}
         | literal_exp:e                         {: RESULT = e; :}
         | function_call:fc                      {: RESULT = fc; :}
         | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
         | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}
+        | error SEMICOLON
 ;
 
 literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
@@ -150,9 +350,9 @@ numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 //| MIN MIN exp:e               {: RESULT = new Uprdec(e); :}
                 //%prec UPRDEC
                 | exp:e ADD ADD                 {: RESULT = new Upinc(e); :}
-                %prec UPINC                     
-                | exp:e MIN MIN                 {: RESULT = new Updec(e); :}               
-                %prec UPDEC                     
+                %prec UPINC
+                | exp:e MIN MIN                 {: RESULT = new Updec(e); :}
+                %prec UPDEC
                 | exp:e1 ADD exp:e2             {: RESULT = new Add(e1, e2); :}
                 | exp:e1 ADD ASSIGN exp:e2      {: RESULT = new AddAssign(e1,e2); :}
                 %prec ASSIGNADD
@@ -160,7 +360,7 @@ numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 | exp:e1 MIN ASSIGN exp:e2      {: RESULT = new MinAssign(e1,e2); :}
                 %prec ASSIGNMIN
                 | exp:e1 MUL exp:e2             {: RESULT = new Mul(e1,e2); :}
-                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); :}    
+                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); :}
                 %prec ASSIGNMUL
                 | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); :}
                 | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); :}
@@ -183,9 +383,11 @@ logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
 ;
 
 while_statement ::= WHILE LPAR exp:e RPAR statements:stmts END                              {: RESULT = new While(e, stmts); :}
+                | error exp
 ;
 
 switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END              {: RESULT = new SwitchStatement(e, scstmts); :}
+                | error switch_case_statement
 ;
 
 switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.addElement(scstmt); RESULT = scstmts; :}
@@ -200,10 +402,11 @@ switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                
                         | exp:e                                                             {: RESULT = new SwitchCaseExpList(); RESULT.addElement(e); :}
 ;
 
-if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                    {: RESULT = new If(e, stmts); :}                                         
+if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                    {: RESULT = new If(e, stmts); :}
                 | IF LPAR exp:e RPAR statements:stmts1 ELSE statements:stmts2 END           {: RESULT = new If(e, stmts1, stmts2); :}
                 | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts END       {: RESULT = new If(e, stmts1, eistmts); :}
                 | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts ELSE statements:stmts2 END      {: RESULT = new If(e, stmts1, eistmts, stmts2); :}
+                | error END
 ;
 
 else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.addElement(eistmt); RESULT = eistmts;  :}
@@ -218,14 +421,14 @@ variable_declaration ::= type:t variable_declarators:vdors                      
 ;
 
 variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.addElement(vdor); RESULT = vdors; :}
-                        | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.addElement(vdor); :}               
+                        | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.addElement(vdor); :}
 ;
 
 variable_declarator ::= IDENTIFIER:i ASSIGN exp:e                                           {: RESULT = new VariableDeclarator(new Identifier(i), e); :}
 ;
 
-parameters ::= parameter:p COMMA parameters:ps                                              {: ps.addElement(p); RESULT = ps; :}    
-        | parameter:p                                                                       {: RESULT = new Parameters(); RESULT.addElement(p); :}  
+parameters ::= parameter:p COMMA parameters:ps                                              {: ps.addElement(p); RESULT = ps; :}
+        | parameter:p                                                                       {: RESULT = new Parameters(); RESULT.addElement(p); :}
 ;
 
 parameter ::= type:t IDENTIFIER:i                                                           {: RESULT = new Parameter(t, new Identifier(i)); :}
@@ -236,10 +439,10 @@ arguments ::= exp:e COMMA arguments:args                                        
 ;
 
 type ::= INTEGER                                                                            {: RESULT = new IntegerType(); :}
-        | CHAR                                                                              {: RESULT = new CharType(); :}  
-        | BOOLEAN                                                                           {: RESULT = new BooleanType(); :}  
-        | DOUBLE                                                                            {: RESULT = new DoubleType(); :}  
-        | STRING                                                                            {: RESULT = new StringType(); :}  
+        | CHAR                                                                              {: RESULT = new CharType(); :}
+        | BOOLEAN                                                                           {: RESULT = new BooleanType(); :}
+        | DOUBLE                                                                            {: RESULT = new DoubleType(); :}
+        | STRING                                                                            {: RESULT = new StringType(); :}
 ;
 
 for_init ::= variable_declaration:vdon                                                      {: RESULT = new ForInit(vdon); :}
@@ -259,7 +462,9 @@ function_declaration ::= FUNCTION type:t IDENTIFIER:i LBRACK parameters:ps RBRAC
            | FUNCTION VOID IDENTIFIER:i LBRACK RBRACK statements:stmts END                                              {: RESULT = new FunctionDeclaration(new Identifier(i), null, stmts); :}
            | FUNCTION VOID IDENTIFIER:i LBRACK parameters:ps RBRACK statements:stmts END                                {: RESULT = new FunctionDeclaration(new Identifier(i), ps, stmts); :}
            | FUNCTION INTEGER MAIN LBRACK RBRACK statements:stmts END                                                   {: RESULT = new FunctionDeclaration(new IntegerType(), new Identifier("main"), null, stmts); :}
+           | error statement
 ;
 
 function_call ::= IDENTIFIER:i LBRACK arguments:args RBRACK                                                             {: RESULT = new FunctionCall(new Identifier(i), args); :}                                                                {:  :}
+                | error RBRACK
 ;

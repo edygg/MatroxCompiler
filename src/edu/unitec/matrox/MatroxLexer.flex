@@ -111,7 +111,7 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
 }
 
 <STRINGFOUND> {
-     ";"                    { yybegin(YYINITIAL);                         }
+     ";"                    { System.err.println("Illegal string declaration at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); yybegin(YYINITIAL);                         }
     {StringDelimiter}       { yybegin(YYINITIAL);                         }
     {StringContent}         { return symbol(sym.STRINGCONTENT, yytext()); }
     .                       { System.err.println("Illegal character <" + yytext() + "> at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); }

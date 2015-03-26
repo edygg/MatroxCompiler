@@ -8,35 +8,36 @@ function integer main[]
 	boolean test_bool <- true;
 	number test_number <- 10.0;
 	string test_string <- "Hola mundo";
+	integer a <- 5, b <- 5, c <- 6;
 	
 	if (test_int = 10 and true)
-		print "Es igual\;";
-	elseif
+		print "Hola";
+	elseif(true)
 		print "Es diferente";
 	end
 
-	while (true)
-		print 1-2*3/4;
+	while(true)
+		print 1-2*3/5;
 		print (not (1 < 2 or 1 <= 2 or 1 > 2 or 1 >= 2 or 1 <> 2 or 1 = 2));
 	end
 
-	for (integer i <- 0; i < 10; i <- i + 3)
-		get_value test_string;
+	for (integer i <- 0; i < 10; i /<- 3)
+		get_value test_int;
 	end
-
-	switch (test_int or false)
-		option 1, 3
+		
+	switch (test_int)
+		option 1,
 			print "One or three";
 		end
 
-		option 2
+		option 
 			print "Only two";
 		end
 	end
-
+	holaMundo[test_string];
 	give_back 0;
 end
 
-function void holaMundo[string message]
+# function string holaMundo[string message]
 	give_back message;
 end
