@@ -7,6 +7,10 @@ public class If extends Statement {
   public Exp e;
   public Statements s1,s2;
   public ElseIfStatements eis;
+  
+  public If(Exp ae, Statements as1) {
+    e=ae; s1=as1;
+  }
 
   public If(Exp ae, Statements as1, Statements as2) {
     e=ae; s1=as1; s2=as2;

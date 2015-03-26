@@ -130,6 +130,7 @@ exp ::= numeric_exp:e                           {: RESULT = e; :}
         | function_call:fc                      {: RESULT = fc; :}
         | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
         | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}
+        | error exp                             {: System.out.println("Error en expresión"); :}
 ;
 
 literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
@@ -160,7 +161,6 @@ numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); :}
                 | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); :}
                 %prec ASSIGNDIV
-                | error:e                       {: System.out.print("Problemas con numeric"); :}
 ;
 
 boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); :}
@@ -169,7 +169,6 @@ boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); 
             | exp:e1 LESSEQ exp:e2              {: RESULT = new LessEq(e1,e2); :}
             | exp:e1 EQU exp:e2                 {: RESULT = new Equ(e1,e2); :}
             | exp:e1 NEQ exp:e2                 {: RESULT = new Neq(e1,e2); :}
-            | error:e                           {: System.out.print("Problemas con boolean"); :}
 ;
 
 logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
@@ -177,7 +176,6 @@ logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
            | exp:e1 AND exp:e2                  {: RESULT = new And(e1,e2); :}
            | TRUE                               {: RESULT = new True(); :}
            | FALSE                              {: RESULT = new False(); :}
-           | error:e                            {: System.out.println("Problemas con logical"); :}
 ;
 
 while_statement ::= WHILE LPAR exp:e RPAR statements:stmts END                              {: RESULT = new While(e, stmts); :}
@@ -200,7 +198,7 @@ switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                
 
 if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                    {: RESULT = new If(e, stmts); :}                                         
                 | IF LPAR exp:e RPAR statements:stmts1 ELSE statements:stmts2 END           {: RESULT = new If(e, stmts1, stmts2); :}
-                | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts END       {: RESULT = new If(e, stmts1, eistmts) :}
+                | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts END       {: RESULT = new If(e, stmts1, eistmts); :}
                 | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts ELSE statements:stmts2 END      {: RESULT = new If(e, stmts1, eistmts, stmts2); :}
 ;
 
