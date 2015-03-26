@@ -29,3 +29,11 @@ Para compilar el archivo MatroxParser.cup realice los siguientes pasos:
 
 # Acerca de Matrox
 Proyecto de la clase de Compiladores en UNITEC Tegucigalpa, desarrollado por [Guillermo R. Mazzoni](https://github.com/Mazzonig) y [Edilson F. Gonzalez](https://github.com/efgm1024)
+
+## Tabla de distribución de trabajo
+Tarea   | EFG   | GRM
+---     | ---   | ---
+Analizador Léxico | 50% | 50%
+Analizador Sintáctico | 50% | 50%
+AST | 50% | 50%
+Errores | 50% | 50%
