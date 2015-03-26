@@ -1,0 +1,24 @@
+# Programa 4: Ciclo While #
+  # Promedio de diez calificaciones #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+    number total <- 0;
+    integer contadorCalif <- 1;
+    number calificacion;
+    number promedio;
+
+    while (contadorCalif <= 10)
+      print "Escriba la calificación: ";
+      get_value calificacion;
+      total <- total + calificacion;
+      contadorCalif <- contadorCalif + 1;
+    end
+
+    promedio <- total / 10;
+
+    print "El promedio de las diez notas es ";
+    print promedio;
+
+    give_back 0;
+  end

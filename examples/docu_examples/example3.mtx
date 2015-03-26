@@ -1,0 +1,44 @@
+# Programa 3: Condicionales #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+      # Declarando dos enteros para compararlos #
+      integer num1;
+      integer num2;
+
+      # get_value obtiene la entrada de la consola y print escribe en la consola #
+      print "Ingrese el primer entero: ";
+      get_value num1;
+      print "Ingrese el segundo entero: ";
+      get_value num2;
+
+      # num1 es igual que num2 #
+      if (num1 = num2)
+        print "Los números son iguales";
+      end
+
+      # num1 es diferente que num2 #
+      if (num1 <> num2)
+        print "Los números son diferentes";
+      end
+
+      # num1 es menor que num2 #
+      if (num1 < num2)
+        print "Num1 es menor que Num2";
+      end
+
+      # num1 es mayor que num2 #
+      if (num1 > num2)
+        print "Num1 es mayor que Num2";
+      end
+
+      # num1 es menor o igual que num2 #
+      if (num1 <= num2)
+        print "Num1 es menor o igual que Num2";
+      end
+
+      # num1 es mayor o igual que num2 #
+      if (num1 >= num2)
+        print "Num1 es mayor o igual que Num2";
+      end
+  end

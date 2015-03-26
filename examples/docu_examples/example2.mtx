@@ -1,0 +1,10 @@
+# Programa 2: Tipos en Matrox #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+      integer test_int <- 10;
+      character test_char <- \c\;
+      boolean test_bool <- true;
+      number test_number <- 10.10;
+      string test_string <- "Hola Mundo";
+  end

@@ -1,0 +1,10 @@
+# Programa 5: Ciclo For #
+  # Impresión de números de 1 a 10 #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+    for (integer i <- 1; i <= 10; i <- i + 1)
+      print "Contador: ";
+      print i;
+    end
+  end

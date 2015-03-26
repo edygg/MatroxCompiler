@@ -1041,10 +1041,10 @@ public class Parser extends java_cup.runtime.lr_parser {
                         System.err.println();
                 }
             }
-            for (int i = 0; i < expected.size(); i++) {
+            //for (int i = 0; i < expected.size(); i++) {
             
-               System.err.println("\t" + symbl_name_from_id(expected.get(i)));
-            }
+               //System.err.println("\t" + symbl_name_from_id(expected.get(i)));
+            //}
         }
     }
 

@@ -1,0 +1,38 @@
+# Programa 6: Selección múltiple con Switch #
+  # Clasificador de notas #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+    integer nota;
+    boolean correcto <- false;
+    while (not correcto)
+      print "Ingrese una nota entre 0 y 10";
+      get_value nota;
+
+      if (nota >= 0 and nota <= 10)
+        correcto <- tue;
+      end
+    end
+
+    switch (nota)
+      option 9, 10
+        print "Obtienes una A";
+      end
+
+      option 8
+        print "Obtienes una B";
+      end
+
+      option 7
+        print "Obtienes una C";
+      end
+
+      option 6
+        print "Obtienes una D";
+      end
+
+      option by_default
+        print "Obtienes una F";
+      end
+    end
+  end

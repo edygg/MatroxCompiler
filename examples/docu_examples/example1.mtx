@@ -1,0 +1,8 @@
+ # Programa 1: Bienvenido a Matrox #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+      print "Hola Mundo Loco";
+      give_back 0;
+  end
+  # Fin función main #

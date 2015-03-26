@@ -1,0 +1,28 @@
+# Programa 7: Declaración y llamado de funciones #
+  # Encontrar el mayor de tres números #
+
+  # La función main empieza la ejecución de una aplicación en Matrox #
+  function integer main[]
+    number num1 <- 0, num2 <- 0, num3 <- 0;
+    print "Escriba tres números para identificar el mayor de ellos";
+    get_value num1;
+    get_value num2;
+    get_value num3;
+    print "El mayor de ellos es: ";
+    print max[num1, num2, num3];
+    give_back 0;
+  end
+
+  function number max[number num1, number num2, number num3]
+    number valorMaximo <- num1;
+
+    if (num2 > valorMaximo)
+      valorMaximo <- num2;
+    end
+
+    if (num3 > valorMaximo)
+      valorMaximo <- num3;
+    end
+
+    give_back valorMaximo;
+  end
