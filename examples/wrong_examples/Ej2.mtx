@@ -1,7 +1,7 @@
-# Ejemplo 2 Types, IfStatement, ForStatement | MatroxCompiler #
-# By Guillermo Mazzoni & Edilson Gonzalez #
+# Ejemplo 2 Types, IfStatement, ForStatement | MatroxCompiler 
+By Guillermo Mazzoni & Edilson Gonzalez #
 
-function integer main[]
+ integer main[] 
 
 	string Nombre<-"Dave Mustaine";
 	integer Edad<-53;
@@ -10,20 +10,20 @@ function integer main[]
 	boolean Vivo<-true;  
 
 
-	if(not Vivo)
+	if(not Vivo)  #Quitar el )#
 		print("Esta muerto");
 	end
 
-	if(Nombre = "Dave Mustaine" and (Edad > 50))
+	if(Nombre "Dave Mustaine" and (Edad > 50)) 
 
-		for(integer i<-0; i < Edad; i<-i+1)  
+		for(integer i<-0; i < Edad; i<-i+1) 
 			     print("Valor de i: " + i);
-			for(integer j<-i; j = 0 ; j--)
+			for(integer ; j = 0 ; j--)       
 				print("Valor de j: " + j);
-			end
+									
 		end
 
-	elseif(Sexo <> \M\ or (Estatura >= 1.80)) 
+	elseif(Sexo <> \M\ or Estatura >= 1.80))    
 		
 		if(Sexo = \F\)
 			print("Es alta la mujer");
@@ -31,11 +31,11 @@ function integer main[]
 
 	elseif(Nombre <> "Dave Mustaine")
 		
-		Impresion["No es Dave"];
+		Impresion"No es Dave"];   			
 
 	else
 	
-		Impresion["Es un alien" + "?"];
+		Impresion["Es un alien" + ?"];    
 	end	
 
 	give_back 0;

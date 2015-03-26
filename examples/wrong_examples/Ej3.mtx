@@ -1,0 +1,20 @@
+# Ejemplo 3  Factorial | MatroxCompiler #
+# By Guillermo Mazzoni & Edilson Gonzalez #
+
+function integer main ] 			
+
+	integer contador<-1, num<-0 factorial<-0; 			 
+
+	print"Ingrese su numero: "); 						
+	get_value num;
+
+	whili(contador <= num)                              
+		factorial*<-contador;
+		contador+;										
+	end
+
+	print("El Factorial del numero: " + num + "es: " + factorial;  
+
+	give_back 0;
+	
+end
