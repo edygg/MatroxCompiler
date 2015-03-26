@@ -30,14 +30,15 @@ Decimal = [0-9]*[\.][0-9]+
 LineTerminator      = \r|\n|\r\n
 WhiteSpace          = {LineTerminator} | [\s\t\f]
 AllCharset          = [\w\W]*
-Comment             = #{AllCharset}#
+CommentDelimiter    = #
 StringDelimiter     = [\"]
-StringContent       = ([^\"\\] | (\\n) | (\\t) | (\\\\) | (\\r) | (\\\"))*
+StringContent       = ([^\"\\;] | (\\n) | (\\t) | (\\\\) | (\\r) | (\\\") | (\\;))*
 CharDelimiter       = [\\]
 CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
 
 %state STRINGFOUND
 %state CHARFOUND
+%state COMMENTFOUND
 
 %%
 
@@ -103,13 +104,14 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
     {Decimal}               { return symbol(sym.DOUBLENUMBER, new Double(Double.parseDouble(yytext()))); }
     {StringDelimiter}       { yybegin(STRINGFOUND);                                                      }
     {CharDelimiter}         { yybegin(CHARFOUND);                                                        }
+    {CommentDelimiter}      { yybegin(COMMENTFOUND);                                                     }
     {WhiteSpace}            { /* ignore */                                                               }
-    {Comment}               { /* ignore */                                                               }
     .                       { System.err.println("Illegal character <" + yytext() + "> at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); }
 
 }
 
 <STRINGFOUND> {
+     ";"                    { yybegin(YYINITIAL);                         }
     {StringDelimiter}       { yybegin(YYINITIAL);                         }
     {StringContent}         { return symbol(sym.STRINGCONTENT, yytext()); }
     .                       { System.err.println("Illegal character <" + yytext() + "> at line: " + (yyline + 1) + " column: " + (yycolumn + 1)); }
@@ -118,5 +120,11 @@ CharContent         = ([^\\])|(\\n)|(\\t)|(\\\\)|(\\r)
 <CHARFOUND> {
     {CharDelimiter}         { yybegin(YYINITIAL);                         }
     {CharContent}           { return symbol(sym.CHARCONTENT, new Character(yytext().charAt(0))); }
+}
+
+<COMMENTFOUND> {
+    {CommentDelimiter}      { yybegin(YYINITIAL);                           }             
+    {WhiteSpace}            { /* Ignore */                                  }
+    .                       { /* Ignore */                                  }
 }
 

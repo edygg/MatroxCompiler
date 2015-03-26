@@ -7,17 +7,19 @@ import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 parser code {:
-    public boolean syntaxErrors;
-
     Lexer lexer;
 
-    public Parser(Lexer lex, ComplexSymbolFactory sf) {
-      super(lex,sf);
+    public Parser(Lexer lex) {
+      super(lex);
       lexer = lex;
     }
     
     public void syntax_error(Symbol cur_token) {
-        System.err.println("Syntax error at line: " + (cur_token.left + 1) + ", col: " + (cur_token.left + 1));
+        System.err.println("Syntax error at line: " + (cur_token.left + 1) + ", col: " + (cur_token.left + 1) + " at symbol: " + symbl_name_from_id(cur_token.sym));
+        List<Integer> expected = expected_token_ids();
+        for (int i = 0; i < expected.size(); i++) {
+            System.err.println("\t" + symbl_name_from_id(expected.get(i)));
+        }
     }
     
 :};
@@ -103,7 +105,8 @@ precedence right UMIN, NOT;
 precedence right UPINC, UPDEC;
 precedence nonassoc ELSE;
 
-program ::= function_declarations:fdons           {: RESULT = new Program(fdons); :}      
+program ::= function_declarations:fdons           {: RESULT = new Program(fdons); :}
+            | /* Lambda */
 ;
 
 statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RESULT = stmts; :}    
@@ -111,16 +114,18 @@ statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RES
 ;
 
 
-statement ::= if_statement:istmt                {: RESULT = istmt; :}
-            | while_statement:wstmt             {: RESULT = wstmt; :}           
-            | for_statement:fstmt               {: RESULT = fstmt; :}                     
-            | switch_statement:sstmt            {: RESULT = sstmt; :}
-            | variable_declaration:vdon         {: RESULT = vdon; :}
-            | variable_declarator:vdor          {: RESULT = vdor; :}
-            | RETURN exp:e                      {: RESULT = new Return(e);  :}
-            | READ exp:e                        {: RESULT = new Read(e); :}
-            | WRITE exp:e                       {: RESULT = new Write(e); :}
-            | exp:e                             {: RESULT = e ; :}
+statement ::= if_statement:istmt                    {: RESULT = istmt; :}
+            | while_statement:wstmt                 {: RESULT = wstmt; :}           
+            | for_statement:fstmt                   {: RESULT = fstmt; :}                     
+            | switch_statement:sstmt                {: RESULT = sstmt; :}
+            | variable_declaration:vdon SEMICOLON   {: RESULT = vdon; :}
+            | variable_declarator:vdor SEMICOLON    {: RESULT = vdor; :}
+            | RETURN exp:e SEMICOLON                {: RESULT = new Return(e);  :}
+            | READ exp:e SEMICOLON                  {: RESULT = new Read(e); :}
+            | WRITE exp:e SEMICOLON                 {: RESULT = new Write(e); :}
+            | exp:e SEMICOLON                       {: RESULT = e ; :}
+            | SEMICOLON
+            | error SEMICOLON
 ;
 
 exp ::= numeric_exp:e                           {: RESULT = e; :}
@@ -130,7 +135,6 @@ exp ::= numeric_exp:e                           {: RESULT = e; :}
         | function_call:fc                      {: RESULT = fc; :}
         | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
         | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}
-        | error exp                             {: System.out.println("Error en expresión"); :}
 ;
 
 literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
@@ -203,14 +207,14 @@ if_statement ::= IF LPAR exp:e RPAR statements:stmts END                        
 ;
 
 else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.addElement(eistmt); RESULT = eistmts;  :}
-                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.addElement(eistmts); :}
+                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.addElement(eistmt); :}
 ;
 
 else_if_statement ::= ELSEIF LPAR exp:e RPAR statements:stmts                               {: RESULT = new ElseIfStatement(e, stmts); :}
 ;
 
-variable_declaration ::= type:t variable_declarators:vdors                                  {: RESULT = new VariableDeclaration(t, vdors); :}
-                        | type:t IDENTIFIER:i                                               {: RESULT = new VariableDeclaration(t, new Identifier(i)); :}
+variable_declaration ::= type:t variable_declarators:vdors                                 {: RESULT = new VariableDeclaration(t, vdors); :}
+                        | type:t IDENTIFIER:i                                              {: RESULT = new VariableDeclaration(t, new Identifier(i)); :}
 ;
 
 variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.addElement(vdor); RESULT = vdors; :}
