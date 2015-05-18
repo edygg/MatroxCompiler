@@ -2,229 +2,383 @@ package edu.unitec.visitor;
 
 import edu.unitec.ast.*;
 
-/*
 public class DepthFirstVisitor implements Visitor {
 
-  // MainClass m;
-  // ClassDeclList cl;
-  public void visit(Program n) {
-    n.m.accept(this);
-    for ( int i = 0; i < n.cl.size(); i++ ) {
-        n.cl.elementAt(i).accept(this);
+    public void visit(Program n) {
+        n.m.accept(this);
+        for (int i = 0; i < n.fds.size(); i++) {
+            n.fds.elementAt(i).accept(this);
+        }
     }
-  }
-  
-  // Identifier i1,i2;
-  // Statement s;
-  public void visit(MainClass n) {
-    n.i1.accept(this);
-    n.i2.accept(this);
-    n.s.accept(this);
-  }
-  
-  // Identifier i;
-  // VarDeclList vl;
-  // MethodDeclList ml;
-  public void visit(ClassDeclSimple n) {
-    n.i.accept(this);
-    for ( int i = 0; i < n.vl.size(); i++ ) {
-        n.vl.elementAt(i).accept(this);
+
+    public void visit(FunctionDeclaration n) {
+        n.i.accept(this);
+        n.t.accept(this);
+
+        for (int i = 0; i < n.ss.size(); i++) {
+            n.ss.elementAt(i).accept(this);
+        }
+
+        for (int i = 0; i < n.ps.size(); i++) {
+            n.ps.elementAt(i).accept(this);
+        }
     }
-    for ( int i = 0; i < n.ml.size(); i++ ) {
-        n.ml.elementAt(i).accept(this);
+
+    public void visit(Statement n) {
+        //n.accept(this);
     }
-  }
- 
-  // Identifier i;
-  // Identifier j;
-  // VarDeclList vl;
-  // MethodDeclList ml;
-  public void visit(ClassDeclExtends n) {
-    n.i.accept(this);
-    n.j.accept(this);
-    for ( int i = 0; i < n.vl.size(); i++ ) {
-        n.vl.elementAt(i).accept(this);
+
+    public void visit(If n) {
+        n.e.accept(this);
+
+        for (int i = 0; i < n.s1.size(); i++) {
+            n.s1.elementAt(i).accept(this);
+        }
+
+        for (int i = 0; i < n.s2.size(); i++) {
+            n.s2.elementAt(i).accept(this);
+        }
+
+        for (int i = 0; i < n.eis.size(); i++) {
+            n.eis.elementAt(i).accept(this);
+        }
     }
-    for ( int i = 0; i < n.ml.size(); i++ ) {
-        n.ml.elementAt(i).accept(this);
+
+    public void visit(ElseIfStatement n) {
+        n.e.accept(this);
+
+        for (int i = 0; i < n.s.size(); i++) {
+            n.s.elementAt(i).accept(this);
+        }
     }
-  }
 
-  // Type t;
-  // Identifier i;
-  public void visit(VarDecl n) {
-    n.t.accept(this);
-    n.i.accept(this);
-  }
+    public void visit(While n) {
+        n.e.accept(this);
 
-  // Type t;
-  // Identifier i;
-  // FormalList fl;
-  // VarDeclList vl;
-  // StatementList sl;
-  // Exp e;
-  public void visit(MethodDecl n) {
-    n.t.accept(this);
-    n.i.accept(this);
-    for ( int i = 0; i < n.fl.size(); i++ ) {
-        n.fl.elementAt(i).accept(this);
+        for (int i = 0; i < n.s.size(); i++) {
+            n.s.elementAt(i).accept(this);
+        }
     }
-    for ( int i = 0; i < n.vl.size(); i++ ) {
-        n.vl.elementAt(i).accept(this);
+
+    public void visit(For n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+        n.fi.accept(this);
+        n.vd.accept(this);
+
+        for (int i = 0; i < n.s.size(); i++) {
+            n.s.elementAt(i).accept(this);
+        }
     }
-    for ( int i = 0; i < n.sl.size(); i++ ) {
-        n.sl.elementAt(i).accept(this);
+
+    public void visit(ForInit n) {
+        n.vd.accept(this);
+        n.vdn.accept(this);
     }
-    n.e.accept(this);
-  }
 
-  // Type t;
-  // Identifier i;
-  public void visit(Formal n) {
-    n.t.accept(this);
-    n.i.accept(this);
-  }
+    public void visit(SwitchStatement n) {
 
-  public void visit(IntArrayType n) {
-  }
+        n.e.accept(this);
 
-  public void visit(BooleanType n) {
-  }
-
-  public void visit(IntegerType n) {
-  }
-
-  // String s;
-  public void visit(IdentifierType n) {
-  }
-
-  // StatementList sl;
-  public void visit(Block n) {
-    for ( int i = 0; i < n.sl.size(); i++ ) {
-        n.sl.elementAt(i).accept(this);
+        for (int i = 0; i < n.scs.size(); i++) {
+            n.scs.elementAt(i).accept(this);
+        }
     }
-  }
 
-  // Exp e;
-  // Statement s1,s2;
-  public void visit(If n) {
-    n.e.accept(this);
-    n.s1.accept(this);
-    n.s2.accept(this);
-  }
+    public void visit(SwitchCaseStatement n) {
 
-  // Exp e;
-  // Statement s;
-  public void visit(While n) {
-    n.e.accept(this);
-    n.s.accept(this);
-  }
+        for (int i = 0; i < n.s.size(); i++) {
+            n.s.elementAt(i).accept(this);
+        }
 
-  // Exp e;
-  public void visit(Print n) {
-    n.e.accept(this);
-  }
-  
-  // Identifier i;
-  // Exp e;
-  public void visit(Assign n) {
-    n.i.accept(this);
-    n.e.accept(this);
-  }
-
-  // Identifier i;
-  // Exp e1,e2;
-  public void visit(ArrayAssign n) {
-    n.i.accept(this);
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(And n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(LessThan n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(Plus n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(Minus n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(Times n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e1,e2;
-  public void visit(ArrayLookup n) {
-    n.e1.accept(this);
-    n.e2.accept(this);
-  }
-
-  // Exp e;
-  public void visit(ArrayLength n) {
-    n.e.accept(this);
-  }
-
-  // Exp e;
-  // Identifier i;
-  // ExpList el;
-  public void visit(Call n) {
-    n.e.accept(this);
-    n.i.accept(this);
-    for ( int i = 0; i < n.el.size(); i++ ) {
-        n.el.elementAt(i).accept(this);
+        for (int i = 0; i < n.scel.size(); i++) {
+            n.scel.elementAt(i).accept(this);
+        }
     }
-  }
 
-  // int i;
-  public void visit(IntegerLiteral n) {
-  }
+    public void visit(VariableDeclaration n) {
 
-  public void visit(True n) {
-  }
+        n.i.accept(this);
+        n.t.accept(this);
 
-  public void visit(False n) {
-  }
+        for (int i = 0; i < n.vds.size(); i++) {
+            n.vds.elementAt(i).accept(this);
+        }
+    }
 
-  // String s;
-  public void visit(IdentifierExp n) {
-  }
+    public void visit(VariableDeclarator n) {
 
-  public void visit(This n) {
-  }
+        n.e.accept(this);
+        n.i.accept(this);
+    }
 
-  // Exp e;
-  public void visit(NewArray n) {
-    n.e.accept(this);
-  }
+    public void visit(Return n) {
+        n.e.accept(this);
+    }
 
-  // Identifier i;
-  public void visit(NewObject n) {
-  }
+    public void visit(Read n) {
+        n.e.accept(this);
+    }
 
-  // Exp e;
-  public void visit(Not n) {
-    n.e.accept(this);
-  }
+    public void visit(Write n) {
+        n.e.accept(this);
+    }
 
-  // String s;
-  public void visit(Identifier n) {
-  }
+    public void visit(Exp n) {
+       // n.accept(this);
+    }
+
+    public void visit(NumericExp n) {
+        //n.accept(this);
+    }
+
+    public void visit(BooleanExp n) {
+        //n.accept(this);
+    }
+
+    public void visit(LogicalExp n) {
+       // n.accept(this);
+    }
+
+    public void visit(LiteralExp n) {
+      //  n.accept(this);
+    }
+
+    public void visit(FunctionCall n) {
+
+        n.i.accept(this);
+
+        for (int i = 0; i < n.as.size(); i++) {
+            n.as.elementAt(i).accept(this);
+        }
+    }
+
+    public void visit(LParExpRPar n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Identifier n) {
+        //n.accept(this);
+    }
+
+    public void visit(IntegerLiteral n) {
+
+    }
+
+    public void visit(DoubleLiteral n) {
+
+    }
+
+    public void visit(StringLiteral n) {
+
+    }
+
+    public void visit(CharLiteral n) {
+
+    }
+
+    public void visit(Umin n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Uprinc n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Uprdec n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Upinc n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Updec n) {
+        n.e1.accept(this);
+    }
+
+    public void visit(Add n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(AddAssign n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Min n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(MinAssign n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Mul n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(MulAssign n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Div n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(DivAssign n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Greater n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Less n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(GreaterEq n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(LessEq n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Equ n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Neq n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(Not n) {
+        n.e.accept(this);
+    }
+
+    public void visit(Or n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(And n) {
+        n.e1.accept(this);
+        n.e2.accept(this);
+    }
+
+    public void visit(True n) {
+
+    }
+
+    public void visit(False n) {
+
+    }
+
+    public void visit(Parameter n) {
+        n.i.accept(this);
+        n.t.accept(this);
+               
+    }
+    
+    public void visit(IntegerType n) {
+
+    }
+
+    public void visit(DoubleType n) {
+
+    }
+
+    public void visit(StringType n) {
+
+    }
+
+    public void visit(CharType n) {
+
+    }
+    
+    public void visit(Assign n){
+        n.e.accept(this);
+        n.i.accept(this);
+    }
+    
+    public void visit(BooleanLiteral n){
+        
+    }
+    
+    public void visit(BooleanType n){
+        
+    }
+    
+    public void visit(IdentifierExp n){
+       
+    }
+    
+    public void visit(IdentifierType n){
+        
+    }
+    
+    public void visit(Print n){
+        n.e.accept(this);
+    }
+    
+    public void visit(Type n){
+        
+    }
+    
+    public void visit(Arguments n){
+        
+    }
+    
+    public void visit(ElseIfStatements n){
+        
+    }
+    
+    public void visit(SwitchCaseStatements n){
+        
+    }
+    
+    public void visit(SwitchCaseExpList n){
+        
+    }
+    
+    public void visit(VariableDeclarators n){
+    }
+    
+    public void visit(Parameters n){
+        
+    }
+    
+    public void visit(VariableDeclarations n){
+    
+    }
+    
+    public void visit (Statements n){
+        
+    }
+    
+    public void visit(MainClass n){
+    
+    }
+    
+    public void visit(FunctionDeclarations n){
+        
+    }
 }
-*/
+
+
+  
