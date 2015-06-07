@@ -9,8 +9,8 @@ public class Arguments {
       list = new Vector();
    }
 
-   public void addElement(Exp n) {
-      list.addElement(n);
+   public void add(Exp n) {
+      list.add(0, n);
    }
 
    public Exp elementAt(int i)  { 

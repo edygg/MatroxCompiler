@@ -9,8 +9,8 @@ public class Statements {
       list = new Vector();
    }
 
-   public void addElement(Statement n) {
-      list.addElement(n);
+   public void add(Statement n) {
+      list.add(0, n);
    }
 
    public Statement elementAt(int i)  { 

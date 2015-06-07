@@ -23,6 +23,7 @@ public class SemanticAnalysis {
     public boolean addID(String id, SemanticTableNode value) {
         if (findID(id) != null)
             return false;
+        
         this.semanticTable.put(id, value);
         return true;
     }

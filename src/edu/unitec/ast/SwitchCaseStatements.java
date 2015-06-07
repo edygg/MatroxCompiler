@@ -9,8 +9,8 @@ public class SwitchCaseStatements {
       list = new Vector();
    }
 
-   public void addElement(SwitchCaseStatement n) {
-      list.addElement(n);
+   public void add(SwitchCaseStatement n) {
+      list.add(0, n);
    }
 
    public SwitchCaseStatement elementAt(int i)  { 

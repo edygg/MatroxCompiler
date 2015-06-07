@@ -1,13 +1,46 @@
 package edu.unitec.visitor;
 
 import edu.unitec.ast.*;
+import edu.unitec.matrox.SemanticAnalysis;
+import edu.unitec.matrox.SemanticFunctionTableNode;
+import edu.unitec.matrox.SemanticTableNode;
+import java.util.Vector;
 
 public class TypeDepthFirstVisitor implements TypeVisitor {
+    
+    private String scope;
+    private SemanticTableNode currentType;
+    private SemanticAnalysis semanticTable;
 
+    public TypeDepthFirstVisitor(SemanticAnalysis semanticTable) {
+        this.semanticTable = semanticTable;
+    }
+    
+    public void errorComplain(String message) {
+        System.err.println(message);
+    }
+    
     public Type visit(Program n) {
-        n.m.accept(this);
+        //n.m.accept(this);
         for (int i = 0; i < n.fds.size(); i++) {
-            n.fds.elementAt(i).accept(this);
+            FunctionDeclaration current = n.fds.elementAt(i);
+            scope = current.i.toString();
+            if (current.ps != null) {
+                Vector<Type> onlyParamTypes = new Vector();
+                Parameters ps = current.ps;
+                for (int j = 0; j < ps.size(); j++) {
+                    onlyParamTypes.add(ps.elementAt(j).t);
+                }
+                currentType = new SemanticFunctionTableNode(current.t, onlyParamTypes, current.i.toString(), scope);
+            } else {
+                currentType = new SemanticFunctionTableNode(current.t, new Vector(), current.i.toString(), scope);
+            }
+                
+            if (!semanticTable.addID(scope, currentType)) {
+                errorComplain(current.i.toString() + " is already defined.");
+            }
+            current.accept(this);
+            //return current.t; // Retornar todo el tipo de una función
         }
         return null;
     }
@@ -101,7 +134,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         for (int i = 0; i < n.s.size(); i++) {
             n.s.elementAt(i).accept(this);
         }
-
+       
         for (int i = 0; i < n.scel.size(); i++) {
             n.scel.elementAt(i).accept(this);
         }
@@ -110,13 +143,16 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(VariableDeclaration n) {
-
-        n.i.accept(this);
+        if (n.i != null)    
+            n.i.accept(this);
         n.t.accept(this);
-
-        for (int i = 0; i < n.vds.size(); i++) {
-            n.vds.elementAt(i).accept(this);
+        
+        if (n.vds != null) {
+            for (int i = 0; i < n.vds.size(); i++) {
+                n.vds.elementAt(i).accept(this);
+            }
         }
+        
         return null;
     }
 
@@ -171,10 +207,13 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(FunctionCall n) {
 
         n.i.accept(this);
-
-        for (int i = 0; i < n.as.size(); i++) {
-            n.as.elementAt(i).accept(this);
+        
+        if (n.as != null) {
+            for (int i = 0; i < n.as.size(); i++) {
+                n.as.elementAt(i).accept(this);
+            }
         }
+
         return null;
     }
 

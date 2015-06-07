@@ -9,8 +9,8 @@ public class FunctionDeclarations {
       list = new Vector();
    }
 
-   public void addElement(FunctionDeclaration n) {
-      list.addElement(n);
+   public void add(FunctionDeclaration n) {
+      list.add(0, n);
    }
 
    public FunctionDeclaration elementAt(int i)  { 

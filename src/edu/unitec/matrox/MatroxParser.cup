@@ -8,6 +8,11 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 parser code {:
     Lexer lexer;
+    private Program generatedProgram;
+
+    public Program getGeneratedProgram() {
+        return this.generatedProgram;
+    }
 
     public Parser(Lexer lex) {
       super(lex);
@@ -305,11 +310,11 @@ precedence right UMIN, NOT;
 precedence right UPINC, UPDEC;
 precedence nonassoc ELSE;
 
-program ::= function_declarations:fdons           {: RESULT = new Program(fdons); :}
+program ::= function_declarations:fdons           {: RESULT = new Program(fdons); generatedProgram = RESULT; :}
             | /* Lambda */
 ;
 
-statements ::= statement:stmt statements:stmts    {: stmts.addElement(stmt); RESULT = stmts; :}
+statements ::= statement:stmt statements:stmts    {: stmts.add( stmt); RESULT = stmts; :}
             | /* Lambda */                        {: RESULT = new Statements(); :}
 ;
 
@@ -390,16 +395,16 @@ switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END  
                 | error switch_case_statement
 ;
 
-switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.addElement(scstmt); RESULT = scstmts; :}
-                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); RESULT.addElement(scstmt);  :}
+switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.add( scstmt); RESULT = scstmts; :}
+                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); RESULT.add( scstmt);  :}
 ;
 
 switch_case_statement ::= CASE switch_case_exp_list:scexpl statements:stmts END             {: RESULT = new SwitchCaseStatement(scexpl, stmts); :}
                         | CASE DEFAULT statements:stmts END                                 {: RESULT = new SwitchCaseStatement(stmts); :}
 ;
 
-switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                            {: scexpl.addElement(e); RESULT = scexpl;  :}
-                        | exp:e                                                             {: RESULT = new SwitchCaseExpList(); RESULT.addElement(e); :}
+switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                            {: scexpl.add( e); RESULT = scexpl;  :}
+                        | exp:e                                                             {: RESULT = new SwitchCaseExpList(); RESULT.add( e); :}
 ;
 
 if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                    {: RESULT = new If(e, stmts); :}
@@ -409,8 +414,8 @@ if_statement ::= IF LPAR exp:e RPAR statements:stmts END                        
                 | error END
 ;
 
-else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.addElement(eistmt); RESULT = eistmts;  :}
-                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.addElement(eistmt); :}
+else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.add( eistmt); RESULT = eistmts;  :}
+                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.add( eistmt); :}
 ;
 
 else_if_statement ::= ELSEIF LPAR exp:e RPAR statements:stmts                               {: RESULT = new ElseIfStatement(e, stmts); :}
@@ -420,22 +425,22 @@ variable_declaration ::= type:t variable_declarators:vdors                      
                         | type:t IDENTIFIER:i                                              {: RESULT = new VariableDeclaration(t, new Identifier(i)); :}
 ;
 
-variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.addElement(vdor); RESULT = vdors; :}
-                        | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.addElement(vdor); :}
+variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.add( vdor); RESULT = vdors; :}
+                        | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.add( vdor); :}
 ;
 
 variable_declarator ::= IDENTIFIER:i ASSIGN exp:e                                           {: RESULT = new VariableDeclarator(new Identifier(i), e); :}
 ;
 
-parameters ::= parameter:p COMMA parameters:ps                                              {: ps.addElement(p); RESULT = ps; :}
-        | parameter:p                                                                       {: RESULT = new Parameters(); RESULT.addElement(p); :}
+parameters ::= parameter:p COMMA parameters:ps                                              {: ps.add( p); RESULT = ps; :}
+        | parameter:p                                                                       {: RESULT = new Parameters(); RESULT.add( p); :}
 ;
 
 parameter ::= type:t IDENTIFIER:i                                                           {: RESULT = new Parameter(t, new Identifier(i)); :}
 ;
 
-arguments ::= exp:e COMMA arguments:args                                                    {: args.addElement(e); RESULT = args; :}
-            | exp:e                                                                         {: RESULT = new Arguments(); RESULT.addElement(e); :}
+arguments ::= exp:e COMMA arguments:args                                                    {: args.add( e); RESULT = args; :}
+            | exp:e                                                                         {: RESULT = new Arguments(); RESULT.add( e); :}
 ;
 
 type ::= INTEGER                                                                            {: RESULT = new IntegerType(); :}
@@ -453,8 +458,8 @@ for_statement ::= FOR LPAR for_init:fi SEMICOLON exp:e1 SEMICOLON exp:e2 RPAR st
                 | FOR LPAR for_init:fi SEMICOLON exp:e1 SEMICOLON variable_declarator:vdor RPAR statements:stmts END    {: RESULT = new For(fi, e1, vdor, stmts); :}
 ;
 
-function_declarations ::= function_declaration:fdon function_declarations:fdons                                         {: fdons.addElement(fdon); RESULT = fdons; :}
-                        | function_declaration:fdon                                                                     {: RESULT = new FunctionDeclarations(); RESULT.addElement(fdon); :}
+function_declarations ::= function_declaration:fdon function_declarations:fdons                                         {: fdons.add( fdon); RESULT = fdons; :}
+                        | function_declaration:fdon                                                                     {: RESULT = new FunctionDeclarations(); RESULT.add( fdon); :}
 ;
 
 function_declaration ::= FUNCTION type:t IDENTIFIER:i LBRACK parameters:ps RBRACK statements:stmts END                  {: RESULT = new FunctionDeclaration(t, new Identifier(i), ps, stmts); :}

@@ -9,8 +9,8 @@ public class ElseIfStatements {
       list = new Vector();
    }
 
-   public void addElement(ElseIfStatement n) {
-      list.addElement(n);
+   public void add(ElseIfStatement n) {
+      list.add(0, n);
    }
 
    public ElseIfStatement elementAt(int i)  { 

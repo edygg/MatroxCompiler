@@ -9,8 +9,8 @@ public class VariableDeclarators {
       list = new Vector();
    }
 
-   public void addElement(VariableDeclarator n) {
-      list.addElement(n);
+   public void add(VariableDeclarator n) {
+      list.add(0, n);
    }
 
    public VariableDeclarator elementAt(int i)  { 

@@ -1,5 +1,7 @@
 package edu.unitec.matrox;
 
+import edu.unitec.ast.Program;
+import edu.unitec.visitor.TypeDepthFirstVisitor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -19,23 +21,19 @@ public class Main {
         }
         /* End Errors */
         try {
-            Lexer lexer2 = new Lexer(new InputStreamReader(new FileInputStream(args[0])));
-            Symbol token = lexer2.next_token();
-            while (token.sym != sym.EOF) {
-                System.out.printf("Token Name: %-20s\tToken value: %-30s\n", sym.terminalNames[token.sym], token.value);
-                token = lexer2.next_token();
-            }
-            lexer2.yyclose();
-            System.out.println("\n\n");
-            
             Lexer lexer = new Lexer(new InputStreamReader(new FileInputStream(args[0])));
             Parser parse = new Parser(lexer);
             parse.parse();
+            Program generatedProgram = parse.getGeneratedProgram();
+            SemanticAnalysis semanticTable = new SemanticAnalysis();
+            TypeDepthFirstVisitor tdfv = new TypeDepthFirstVisitor(semanticTable);
+            generatedProgram.accept(tdfv);
+            System.out.println(semanticTable);
             
         } catch (FileNotFoundException ex) {
             System.err.println("File not found.");
         } catch (Exception ex) {
-            //System.err.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }

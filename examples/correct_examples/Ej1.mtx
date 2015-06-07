@@ -14,7 +14,7 @@ function integer main[]
 
 	switch(user) 
 
-		option a
+		option \a\
 
 			print("Ingrese el largo: ");
 			get_value a;
@@ -23,7 +23,7 @@ function integer main[]
 			print(Perimetro[a,b]);
 		end
 
-		option b
+		option \b\
 
 			print("Ingrese el largo: ");
 			get_value a;
