@@ -125,7 +125,7 @@ public class DepthFirstVisitor implements Visitor {
     }
 
     public void visit(Exp n) {
-       // n.accept(this);
+        // n.accept(this);
     }
 
     public void visit(NumericExp n) {
@@ -137,11 +137,11 @@ public class DepthFirstVisitor implements Visitor {
     }
 
     public void visit(LogicalExp n) {
-       // n.accept(this);
+        // n.accept(this);
     }
 
     public void visit(LiteralExp n) {
-      //  n.accept(this);
+        //  n.accept(this);
     }
 
     public void visit(FunctionCall n) {
@@ -292,9 +292,9 @@ public class DepthFirstVisitor implements Visitor {
     public void visit(Parameter n) {
         n.i.accept(this);
         n.t.accept(this);
-               
+
     }
-    
+
     public void visit(IntegerType n) {
 
     }
@@ -310,75 +310,80 @@ public class DepthFirstVisitor implements Visitor {
     public void visit(CharType n) {
 
     }
+
+    public void visit(NullType n) {
+        
+    }
     
-    public void visit(Assign n){
+    public void visit(ErrorType n) {
+        
+    }
+   
+    public void visit(Assign n) {
         n.e.accept(this);
         n.i.accept(this);
     }
-    
-    public void visit(BooleanLiteral n){
-        
+
+    public void visit(BooleanLiteral n) {
+
     }
-    
-    public void visit(BooleanType n){
-        
+
+    public void visit(BooleanType n) {
+
     }
-    
-    public void visit(IdentifierExp n){
-       
+
+    public void visit(IdentifierExp n) {
+
     }
-    
-    public void visit(IdentifierType n){
-        
+
+    public void visit(IdentifierType n) {
+
     }
-    
-    public void visit(Print n){
+
+    public void visit(Print n) {
         n.e.accept(this);
     }
-    
-    public void visit(Type n){
-        
+
+    public void visit(Type n) {
+
     }
-    
-    public void visit(Arguments n){
-        
+
+    public void visit(Arguments n) {
+
     }
-    
-    public void visit(ElseIfStatements n){
-        
+
+    public void visit(ElseIfStatements n) {
+
     }
-    
-    public void visit(SwitchCaseStatements n){
-        
+
+    public void visit(SwitchCaseStatements n) {
+
     }
-    
-    public void visit(SwitchCaseExpList n){
-        
+
+    public void visit(SwitchCaseExpList n) {
+
     }
-    
-    public void visit(VariableDeclarators n){
+
+    public void visit(VariableDeclarators n) {
     }
-    
-    public void visit(Parameters n){
-        
+
+    public void visit(Parameters n) {
+
     }
-    
-    public void visit(VariableDeclarations n){
-    
+
+    public void visit(VariableDeclarations n) {
+
     }
-    
-    public void visit (Statements n){
-        
+
+    public void visit(Statements n) {
+
     }
-    
-    public void visit(MainClass n){
-    
+
+    public void visit(MainClass n) {
+
     }
-    
-    public void visit(FunctionDeclarations n){
-        
+
+    public void visit(FunctionDeclarations n) {
+
     }
 }
-
-
-  
