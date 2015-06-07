@@ -21,26 +21,22 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
     
     public Type visit(Program n) {
-        //n.m.accept(this);
-        for (int i = 0; i < n.fds.size(); i++) {
-            FunctionDeclaration current = n.fds.elementAt(i);
-            scope = current.i.toString();
-            if (current.ps != null) {
-                Vector<Type> onlyParamTypes = new Vector();
-                Parameters ps = current.ps;
-                for (int j = 0; j < ps.size(); j++) {
-                    onlyParamTypes.add(ps.elementAt(j).t);
+        FunctionDeclarations allFunctions = n.fds;
+        
+        for (int i = 0; i < allFunctions.size(); i++) {
+            FunctionDeclaration currentFunction = allFunctions.elementAt(i);
+            Type returnType = currentFunction.t;
+            Identifier id = currentFunction.i;
+            Vector<Type> paramTypes = new Vector();
+            Parameters functionParams = currentFunction.ps;
+            if (functionParams != null) {
+                for (int j = 0; j < functionParams.size(); j++) {
+                    Parameter currentParam = functionParams.elementAt(j);
+                    Type paramType = currentParam.accept(this);
+                    paramTypes.add(paramType);
                 }
-                currentType = new SemanticFunctionTableNode(current.t, onlyParamTypes, current.i.toString(), scope);
-            } else {
-                currentType = new SemanticFunctionTableNode(current.t, new Vector(), current.i.toString(), scope);
-            }
-                
-            if (!semanticTable.addID(scope, currentType)) {
-                errorComplain(current.i.toString() + " is already defined.");
-            }
-            current.accept(this);
-            //return current.t; // Retornar todo el tipo de una función
+            } 
+            
         }
         return null;
     }
@@ -378,9 +374,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(Parameter n) {
-        n.i.accept(this);
-        n.t.accept(this);
-        return null;
+        return n.t;
     }
 
     public Type visit(IntegerType n) {
