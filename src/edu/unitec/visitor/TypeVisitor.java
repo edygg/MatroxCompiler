@@ -76,4 +76,6 @@ public interface TypeVisitor {
   public Type visit(FunctionCall n);
   public Type visit(ElseIfStatement n);
   public Type visit(ElseIfStatements n);
+  public Type visit(NullType n);
+  public Type visit(ErrorType n);
 }

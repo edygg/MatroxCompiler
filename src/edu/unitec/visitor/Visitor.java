@@ -78,4 +78,6 @@ public interface Visitor {
   public void visit(FunctionCall n);
   public void visit(ElseIfStatement n);
   public void visit(ElseIfStatements n);
+  public void visit(NullType n);
+  public void visit(ErrorType n);
 }
