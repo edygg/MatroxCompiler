@@ -340,10 +340,6 @@ public class DepthFirstVisitor implements Visitor {
 
     }
 
-    public void visit(Print n) {
-        n.e.accept(this);
-    }
-
     public void visit(Type n) {
 
     }

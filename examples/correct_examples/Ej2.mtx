@@ -17,9 +17,11 @@ function integer main[]
 	if(Nombre = "Dave Mustaine" and (Edad > 50))
 
 		for(integer i<-0; i < Edad; i<-i+1)  
-			     print("Valor de i: " + i);
+			     print("Valor de i: ");
+			     print(i);
 			for(integer j<-i; j = 0 ; j--)
-				print("Valor de j: " + j);
+				print("Valor de j: ");
+				print(j);
 			end
 		end
 
@@ -31,16 +33,16 @@ function integer main[]
 
 	elseif(Nombre <> "Dave Mustaine")
 		
-		Impresion["No es Dave"];
+		Impresion["No es Dave"]; 
 
 	else
 	
-		Impresion["Es un alien" + "?"];
+		# Impresion["Es un alien" + "?"]; #
 	end	
 
 	give_back 0;
 
-	end
+end
 
 
 function void Impresion [string text]
