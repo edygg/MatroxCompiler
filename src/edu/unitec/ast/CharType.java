@@ -11,4 +11,14 @@ public class CharType extends Type {
   public Type accept(TypeVisitor v) {
     return v.visit(this);
   }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof CharType)
+            return true;
+        else
+            return false;
+    }
+  
+  
 }

@@ -39,7 +39,6 @@ public interface Visitor {
   public void visit(Or n);
   public void visit(Parameter n);
   public void visit(Parameters n);
-  public void visit(Print n);
   public void visit(Statement n);
   public void visit(Statements n);
   public void visit(StringLiteral n);

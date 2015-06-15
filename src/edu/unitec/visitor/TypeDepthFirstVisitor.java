@@ -4,94 +4,140 @@ import edu.unitec.ast.*;
 import edu.unitec.matrox.SemanticAnalysis;
 import edu.unitec.matrox.SemanticFunctionTableNode;
 import edu.unitec.matrox.SemanticTableNode;
+import edu.unitec.matrox.SemanticVariableTableNode;
 import java.util.Vector;
 
 public class TypeDepthFirstVisitor implements TypeVisitor {
-    
+
     private String scope;
-    private SemanticTableNode currentType;
+    private Type currentFunctionReturnType;
     private SemanticAnalysis semanticTable;
 
     public TypeDepthFirstVisitor(SemanticAnalysis semanticTable) {
         this.semanticTable = semanticTable;
     }
-    
+
     public void errorComplain(String message) {
         System.err.println(message);
     }
-    
+
     public Type visit(Program n) {
-        //n.m.accept(this);
-        for (int i = 0; i < n.fds.size(); i++) {
-            FunctionDeclaration current = n.fds.elementAt(i);
-            scope = current.i.toString();
-            if (current.ps != null) {
-                Vector<Type> onlyParamTypes = new Vector();
-                Parameters ps = current.ps;
-                for (int j = 0; j < ps.size(); j++) {
-                    onlyParamTypes.add(ps.elementAt(j).t);
-                }
-                currentType = new SemanticFunctionTableNode(current.t, onlyParamTypes, current.i.toString(), scope);
-            } else {
-                currentType = new SemanticFunctionTableNode(current.t, new Vector(), current.i.toString(), scope);
-            }
-                
-            if (!semanticTable.addID(scope, currentType)) {
-                errorComplain(current.i.toString() + " is already defined.");
-            }
-            current.accept(this);
-            //return current.t; // Retornar todo el tipo de una función
+        FunctionDeclarations allFunctions = n.fds;
+
+        //Verificando función por función si están correctamente declaradas
+        for (int i = 0; i < allFunctions.size(); i++) {
+            allFunctions.elementAt(i).accept(this);
         }
-        return null;
+
+        //Continuando con el llamado de instrucción por instrucción
+        for (int i = 0; i < allFunctions.size(); i++) {
+            FunctionDeclaration currentFunction = allFunctions.elementAt(i);
+            currentFunctionReturnType = currentFunction.t;
+            Statements currentStatements = currentFunction.ss;
+            for (int j = 0; j < currentStatements.size(); j++) {
+                currentStatements.elementAt(j).accept(this);
+            }
+        }
+
+        return new NullType();
     }
 
     public Type visit(FunctionDeclaration n) {
-        n.i.accept(this);
-        n.t.accept(this);
-
-        for (int i = 0; i < n.ss.size(); i++) {
-            n.ss.elementAt(i).accept(this);
+        //Variables necesarias para la tabla de símbolos
+        Type returnType = n.t;
+        Identifier id = n.i;
+        //Revisando los parámetros
+        Vector<Type> paramTypes = new Vector();
+        Parameters functionParams = n.ps;
+        if (functionParams != null) {
+            for (int j = 0; j < functionParams.size(); j++) {
+                Parameter currentParam = functionParams.elementAt(j);
+                Type paramType = currentParam.accept(this);
+                paramTypes.add(paramType);
+            }
+        }
+        //Comprobación de tipos para la función
+        SemanticFunctionTableNode neoNode = new SemanticFunctionTableNode(returnType, paramTypes, id.toString(), scope);
+        if (!semanticTable.addID(id.toString(), neoNode)) {
+            errorComplain(id.toString() + "is already taken.");
         }
 
-        for (int i = 0; i < n.ps.size(); i++) {
-            n.ps.elementAt(i).accept(this);
-        }
-        return null;
+        return new NullType();
     }
 
     public Type visit(Statement n) {
-        //n.accept(this);
-        return null;
+        if (n instanceof Exp) {
+            return ((Exp) n).accept(this);
+        } else if (n instanceof For) {
+            return ((For) n).accept(this);
+        } else if (n instanceof If) {
+            return ((If) n).accept(this);
+        } else if (n instanceof Read) {
+            return ((Read) n).accept(this);
+        } else if (n instanceof Return) {
+            return ((Return) n).accept(this);
+        } else if (n instanceof SwitchStatement) {
+            return ((SwitchStatement) n).accept(this);
+        } else if (n instanceof VariableDeclaration) {
+            return ((VariableDeclaration) n).accept(this);
+        } else if (n instanceof VariableDeclarator) {
+            return ((VariableDeclarator) n).accept(this);
+        } else if (n instanceof Write) {
+            return ((Write) n).accept(this);
+        } else if (n instanceof While) {
+            return ((While) n).accept(this);
+        } else {
+            return new ErrorType();
+        }
     }
 
     public Type visit(If n) {
-        n.e.accept(this);
+        Type trueExp = n.e.accept(this);
+        if (!(trueExp instanceof BooleanType)) {
+            //Mala expresión
+            return new ErrorType();
+        }
 
         for (int i = 0; i < n.s1.size(); i++) {
             n.s1.elementAt(i).accept(this);
         }
-
-        for (int i = 0; i < n.s2.size(); i++) {
-            n.s2.elementAt(i).accept(this);
+        
+        if (n.eis != null) {
+            for (int i = 0; i < n.eis.size(); i++) {
+                n.eis.elementAt(i).accept(this);
+            }
         }
-
-        for (int i = 0; i < n.eis.size(); i++) {
-            n.eis.elementAt(i).accept(this);
+        
+        if (n.s2 != null) {
+            for (int i = 0; i < n.s2.size(); i++) {
+                n.s2.elementAt(i).accept(this);
+            }
         }
-        return null;
+        
+        return new NullType();
     }
 
     public Type visit(ElseIfStatement n) {
-        n.e.accept(this);
-
+        Type trueExpType = n.e.accept(this);
+        
+        if (!(trueExpType instanceof BooleanType)) {
+            //Mala expresión
+            return new ErrorType();
+        }
+        
         for (int i = 0; i < n.s.size(); i++) {
             n.s.elementAt(i).accept(this);
         }
-        return null;
+        return new NullType();
     }
 
     public Type visit(While n) {
-        n.e.accept(this);
+        Type trueExpType = n.e.accept(this);
+        
+        if (!(trueExpType instanceof BooleanType)) {
+            //No es booleana la exp
+            return new ErrorType();
+        }
 
         for (int i = 0; i < n.s.size(); i++) {
             n.s.elementAt(i).accept(this);
@@ -100,22 +146,34 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(For n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
         n.fi.accept(this);
-        n.vd.accept(this);
+        
+        Type centerCondType = n.e1.accept(this);
+        if (!(centerCondType instanceof BooleanType)) {
+            //No es una expresión booleana
+            return new ErrorType();
+        }
+           
+        if (n.e2 != null)
+            n.e2.accept(this);
+        
+        if (n.vd != null)
+            n.vd.accept(this);
 
         for (int i = 0; i < n.s.size(); i++) {
             n.s.elementAt(i).accept(this);
         }
-        return null;
+        return new NullType();
     }
 
     public Type visit(ForInit n) {
-        n.vd.accept(this);
-        n.vdn.accept(this);
-
-        return null;
+        if (n.vd != null)
+            return n.vd.accept(this);
+        
+        if (n.vdn != null)
+            return n.vdn.accept(this);
+        
+        return new ErrorType();
     }
 
     public Type visit(SwitchStatement n) {
@@ -134,7 +192,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         for (int i = 0; i < n.s.size(); i++) {
             n.s.elementAt(i).accept(this);
         }
-       
+
         for (int i = 0; i < n.scel.size(); i++) {
             n.scel.elementAt(i).accept(this);
         }
@@ -143,70 +201,189 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(VariableDeclaration n) {
-        if (n.i != null)    
-            n.i.accept(this);
-        n.t.accept(this);
+        if (n.i != null) {
+            //Agregar el nodo a la tabla de simbolos
+            SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, n.i.toString(), scope);
+            if (!semanticTable.addID(n.i.toString(), neoVar)) {
+                //El identificador ya existe
+                return new ErrorType();
+            }
+            return new NullType();
+        }
         
         if (n.vds != null) {
             for (int i = 0; i < n.vds.size(); i++) {
-                n.vds.elementAt(i).accept(this);
+                VariableDeclarator currentVar = n.vds.elementAt(i);
+                SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, currentVar.i.toString(), scope);
+                if (!semanticTable.addID(currentVar.i.toString(), neoVar)) {
+                    //El identificador existe
+                    return new ErrorType();
+                }
+                
+                return new NullType();
             }
         }
-        
-        return null;
+
+        return new ErrorType();
     }
 
     public Type visit(VariableDeclarator n) {
-
-        n.e.accept(this);
-        n.i.accept(this);
-
-        return null;
+        SemanticVariableTableNode varInfo = null;
+        
+        if (semanticTable.findID(n.i.toString()) instanceof SemanticVariableTableNode) {
+            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.i.toString());
+            Type expType = n.e.accept(this);
+            if (expType.equals(varInfo.getType())) {
+                return new NullType();
+            } else {
+                //POrque la exp no es asignamble
+                return new ErrorType();
+            }
+        } else {
+            //No se encuentra el id
+            return new ErrorType();
+        }
     }
 
     public Type visit(Return n) {
-        n.e.accept(this);
-        return null;
+        Type expRetType = n.e.accept(this);
+        
+        if (!(currentFunctionReturnType.equals(expRetType))) {
+            //Typo de retorno no es el correcto
+            return new ErrorType();
+        }
+            
+        return new NullType();
     }
 
     public Type visit(Read n) {
-        n.e.accept(this);
-        return null;
+        if (!(n.e instanceof Identifier)) {
+            //No se está asignando una lectura a un identificador
+            return new ErrorType();
+        }
+        return new NullType();
     }
 
     public Type visit(Write n) {
         n.e.accept(this);
-        return null;
+        return new NullType();
     }
 
     public Type visit(Exp n) {
-        // n.accept(this);
-        return null;
+        if (n instanceof NumericExp) {
+            return ((NumericExp) n).accept(this);
+        } else if (n instanceof BooleanExp) {
+            return ((BooleanExp) n).accept(this);
+        } else if (n instanceof LogicalExp) {
+            return ((LogicalExp) n).accept(this);
+        } else if (n instanceof LiteralExp) {
+            return ((LiteralExp) n).accept(this);
+        } else if (n instanceof FunctionCall) {
+            return ((FunctionCall) n).accept(this);
+        } else if (n instanceof Identifier) {
+            return ((Identifier) n).accept(this);
+        } else if (n instanceof LParExpRPar) {
+            return ((LParExpRPar) n).accept(this);
+        } else {
+            return new ErrorType();
+        }
     }
 
     public Type visit(NumericExp n) {
-        //n.accept(this);
-        return null;
+        if (n instanceof Umin) {
+            return ((Umin) n).accept(this);
+        } else if (n instanceof Upinc) {
+            return ((Upinc) n).accept(this);
+        } else if (n instanceof Updec) {
+            return ((Updec) n).accept(this);
+        } else if (n instanceof Add) {
+            return ((Add) n).accept(this);
+        } else if (n instanceof AddAssign) {
+            return ((AddAssign) n).accept(this);
+        } else if (n instanceof Min) {
+            return ((Min) n).accept(this);
+        } else if (n instanceof MinAssign) {
+            return ((MinAssign) n).accept(this);
+        } else if (n instanceof Mul) {
+            return ((Mul) n).accept(this);
+        } else if (n instanceof MulAssign) {
+            return ((MulAssign) n).accept(this);
+        } else if (n instanceof Div) {
+            return ((Div) n).accept(this);
+        } else if (n instanceof DivAssign) {
+            return ((DivAssign) n).accept(this);
+        } else {
+            return new ErrorType();
+        }
     }
 
     public Type visit(BooleanExp n) {
-        //n.accept(this);
-        return null;
+        if (n instanceof Greater)
+            return ((Greater) n).accept(this);
+        else if (n instanceof Less)
+            return ((Less) n).accept(this);
+        else if (n instanceof GreaterEq)
+            return ((GreaterEq) n).accept(this);
+        else if (n instanceof LessEq)
+            return ((LessEq) n).accept(this);
+        else if (n instanceof Equ)
+            return ((Equ) n).accept(this);
+        else if (n instanceof Neq)
+            return ((Neq) n).accept(this);
+        else 
+            return new ErrorType();
     }
 
     public Type visit(LogicalExp n) {
-        // n.accept(this);
-        return null;
+        if (n instanceof Not)
+            return ((Not) n).accept(this);
+        else if (n instanceof Or)
+            return ((Not) n).accept(this);
+        else if (n instanceof And)
+            return ((And) n).accept(this);
+        else if (n instanceof True)
+            return ((True) n).accept(this);
+        else if (n instanceof False)
+            return ((False) n).accept(this);
+        else 
+            return new ErrorType();
     }
 
     public Type visit(LiteralExp n) {
-        //  n.accept(this);
-        return null;
+        if (n instanceof IntegerLiteral)
+            return ((IntegerLiteral) n).accept(this);
+        else if (n instanceof DoubleLiteral)
+            return ((DoubleLiteral) n).accept(this);
+        else if (n instanceof StringLiteral)
+            return ((StringLiteral) n).accept(this);
+        else if (n instanceof CharLiteral)
+            return ((CharLiteral) n).accept(this);
+        else 
+            return new ErrorType();
     }
 
     public Type visit(FunctionCall n) {
-
-        n.i.accept(this);
+        SemanticFunctionTableNode functionInfo = null;
+        if (semanticTable.findID(n.i.toString()) instanceof SemanticFunctionTableNode) {
+            functionInfo = (SemanticFunctionTableNode) semanticTable.findID(n.i.toString());
+            Vector<Type> paramTypes = functionInfo.getParams();
+            Arguments args = n.as;
+            //Verificar cuando sea sobrecarga
+            if (paramTypes.size() == args.size()) {
+                for (int i = 0; i < paramTypes.size(); i++) {
+                    Type currentArgType = args.elementAt(i).accept(this);
+                    if (!(currentArgType.equals(paramTypes.get(i)))) {
+                        //El parámetro encontrado no es del tipo que corresponde en esa posición
+                        return new ErrorType();
+                    }
+                }
+            } else {
+                //La cantidad de parámetros es diferente
+            }
+        } else {
+            //El identificador no es una función
+            return new ErrorType();
+        }
         
         if (n.as != null) {
             for (int i = 0; i < n.as.size(); i++) {
@@ -218,193 +395,304 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(LParExpRPar n) {
-        n.e1.accept(this);
-        return null;
+        return n.e1.accept(this);
     }
 
     public Type visit(Identifier n) {
-        //n.accept(this);
-        return null;
+        SemanticVariableTableNode varInfo = null;
+        if (semanticTable.findID(n.toString()) instanceof SemanticVariableTableNode) {
+            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.toString());
+            return varInfo.getType();
+        } else {
+            //No es una variable
+            return new ErrorType();
+        }
     }
 
     public Type visit(IntegerLiteral n) {
-        return null;
+        return new IntegerType();
     }
 
     public Type visit(DoubleLiteral n) {
-        return null;
+        return new DoubleType();
     }
 
     public Type visit(StringLiteral n) {
-        return null;
+        return new StringType();
     }
 
     public Type visit(CharLiteral n) {
-        return null;
+        return new CharType();
     }
 
     public Type visit(Umin n) {
-        n.e1.accept(this);
-        return null;
+        Type expType = n.e1.accept(this);
+        if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            return new ErrorType();
+        } else {
+            return expType;
+        }
     }
 
     public Type visit(Uprinc n) {
-        n.e1.accept(this);
         return null;
     }
 
     public Type visit(Uprdec n) {
-        n.e1.accept(this);
         return null;
     }
 
     public Type visit(Upinc n) {
-        n.e1.accept(this);
-        return null;
+        Type expType = n.e1.accept(this);
+        if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            return new ErrorType();
+        } else {
+            return expType;
+        }
     }
 
     public Type visit(Updec n) {
-        n.e1.accept(this);
-        return null;
+        Type expType = n.e1.accept(this);
+        if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            return new ErrorType();
+        } else {
+            return expType;
+        }
     }
 
     public Type visit(Add n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType || leftExp instanceof StringType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(AddAssign n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType || leftExp instanceof StringType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Min n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(MinAssign n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Mul n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(MulAssign n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Div n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(DivAssign n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
+                return leftExp;
+            }
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Greater n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Less n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(GreaterEq n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(LessEq n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Equ n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Neq n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+
+        if (leftExp.equals(rightExp)) {
+            return new BooleanType();
+        }
+
+        return new ErrorType();
     }
 
     public Type visit(Not n) {
-        n.e.accept(this);
-        return null;
+        Type exp = n.e.accept(this);
+        
+        if (exp instanceof BooleanType)
+            return exp;
+        else 
+            return new ErrorType();
     }
 
     public Type visit(Or n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+        
+        if (leftExp instanceof BooleanType && rightExp instanceof BooleanType)
+            return leftExp;
+        else 
+            return new ErrorType();
     }
 
     public Type visit(And n) {
-        n.e1.accept(this);
-        n.e2.accept(this);
-        return null;
+        Type leftExp = n.e1.accept(this);
+        Type rightExp = n.e2.accept(this);
+        
+        if (leftExp instanceof BooleanType && rightExp instanceof BooleanType)
+            return leftExp;
+        else 
+            return new ErrorType();
     }
 
     public Type visit(True n) {
-        return null;
+        return new BooleanType();
     }
 
     public Type visit(False n) {
-        return null;
+        return new BooleanType();
     }
 
     public Type visit(Parameter n) {
-        n.i.accept(this);
-        n.t.accept(this);
-        return null;
+        return n.t;
     }
 
     public Type visit(IntegerType n) {
-        return null;
+        return n;
     }
-    
+
     public Type visit(NullType n) {
-        return null;
+        return n;
     }
-    
+
     public Type visit(ErrorType n) {
-        return null;
+        return n;
     }
 
     public Type visit(DoubleType n) {
-        return null;
+        return n;
     }
 
     public Type visit(StringType n) {
-        return null;
+        return n;
     }
 
     public Type visit(CharType n) {
-        return null;
+        return n;
     }
 
     public Type visit(Assign n) {
@@ -426,11 +714,6 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     }
 
     public Type visit(IdentifierType n) {
-        return null;
-    }
-
-    public Type visit(Print n) {
-        n.e.accept(this);
         return null;
     }
 

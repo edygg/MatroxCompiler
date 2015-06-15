@@ -11,4 +11,14 @@ public class DoubleType extends Type {
   public Type accept(TypeVisitor v) {
     return v.visit(this);
   }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DoubleType)
+            return true;
+        else
+            return false;
+    }
+  
+  
 }

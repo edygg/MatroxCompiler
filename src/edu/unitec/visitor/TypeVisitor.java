@@ -37,7 +37,6 @@ public interface TypeVisitor {
   public Type visit(Or n);
   public Type visit(Parameter n);
   public Type visit(Parameters n);
-  public Type visit(Print n);
   public Type visit(Statement n);
   public Type visit(Statements n);
   public Type visit(StringLiteral n);
