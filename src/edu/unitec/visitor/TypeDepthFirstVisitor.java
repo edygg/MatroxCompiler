@@ -18,8 +18,8 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         this.semanticTable = semanticTable;
     }
 
-    public void errorComplain(String message) {
-        System.err.println(message);
+    public void errorComplain(String message, int line, int col) {
+        System.err.println(message + "\nError at line: " + (line + 1) + ", col: " + (col + 1) + ".\n\n");
     }
 
     public Type visit(Program n) {
@@ -48,7 +48,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
                     SemanticTableNode infoParam = new SemanticVariableTableNode(currentParam.t, currentParam.i.toString(), scope, true, currentDirection);
                     currentDirection += semanticTable.sizeOf(currentParam.t);
                     if (!semanticTable.addID(currentParam.i.toString(), scope, infoParam)) {
-                        errorComplain(currentParam.i.toString() + " is already taken.");
+                        errorComplain(currentParam.i.toString() + " is already taken.", currentParam.i.getLine(), currentParam.i.getColumn());
                     }
                 }
             }
