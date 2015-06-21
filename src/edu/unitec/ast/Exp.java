@@ -1,7 +1,9 @@
 package edu.unitec.ast;
 
-import edu.unitec.visitor.Visitor;
+import edu.unitec.intermediatelanguage.IntermediateForm;
+import edu.unitec.visitor.IntermediateVisitor;
 import edu.unitec.visitor.TypeVisitor;
+import edu.unitec.visitor.Visitor;
 
 public abstract class Exp extends Statement {
 
@@ -10,7 +12,7 @@ public abstract class Exp extends Statement {
     public int getColumn() {
         return column;
     }
-
+        
     public void setColumn(int column) {
         this.column = column;
     }
@@ -28,4 +30,6 @@ public abstract class Exp extends Statement {
     public abstract void accept(Visitor v);
 
     public abstract Type accept(TypeVisitor v);
+    
+    public abstract IntermediateForm accept(IntermediateVisitor v);
 }

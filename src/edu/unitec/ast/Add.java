@@ -1,7 +1,9 @@
 package edu.unitec.ast;
 
-import edu.unitec.visitor.Visitor;
+import edu.unitec.intermediatelanguage.IntermediateForm;
+import edu.unitec.visitor.IntermediateVisitor;
 import edu.unitec.visitor.TypeVisitor;
+import edu.unitec.visitor.Visitor;
 
 public class Add extends NumericExp {
   public Exp e1,e2;
@@ -15,6 +17,10 @@ public class Add extends NumericExp {
   }
 
   public Type accept(TypeVisitor v) {
+    return v.visit(this);
+  }
+  
+  public IntermediateForm accept(IntermediateVisitor v) {
     return v.visit(this);
   }
 }

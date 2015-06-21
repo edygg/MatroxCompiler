@@ -1,10 +1,82 @@
-
 package edu.unitec.visitor;
 
-/**
- *
- * @author Edilson Gonzalez
- */
-public class IntermediateVisitor {
-    
+import edu.unitec.ast.*;
+import edu.unitec.intermediatelanguage.IntermediateForm;
+
+public interface IntermediateVisitor {
+  public IntermediateForm visit(Add n);
+  public IntermediateForm visit(And n);
+  public IntermediateForm visit(Assign n);
+  public IntermediateForm visit(BooleanLiteral n);
+  public IntermediateForm visit(BooleanType n);
+  public IntermediateForm visit(CharLiteral n);
+  public IntermediateForm visit(CharType n);
+  public IntermediateForm visit(Div n);
+  public IntermediateForm visit(DoubleLiteral n);
+  public IntermediateForm visit(DoubleType n);
+  public IntermediateForm visit(Equ n);
+  public IntermediateForm visit(Exp n);
+  public IntermediateForm visit(False n);
+  public IntermediateForm visit(For n);
+  public IntermediateForm visit(FunctionDeclaration n);
+  public IntermediateForm visit(FunctionDeclarations n);
+  public IntermediateForm visit(Greater n);
+  public IntermediateForm visit(GreaterEq n);
+  public IntermediateForm visit(Identifier n);
+  public IntermediateForm visit(IdentifierExp n);
+  public IntermediateForm visit(IdentifierType n);
+  public IntermediateForm visit(If n);
+  public IntermediateForm visit(IntegerLiteral n);
+  public IntermediateForm visit(IntegerType n);
+  public IntermediateForm visit(Less n);
+  public IntermediateForm visit(LessEq n);
+  public IntermediateForm visit(MainClass n);
+  public IntermediateForm visit(Min n);
+  public IntermediateForm visit(Mul n);
+  public IntermediateForm visit(Neq n);
+  public IntermediateForm visit(Not n);
+  public IntermediateForm visit(Or n);
+  public IntermediateForm visit(Parameter n);
+  public IntermediateForm visit(Parameters n);
+  public IntermediateForm visit(Statement n);
+  public IntermediateForm visit(Statements n);
+  public IntermediateForm visit(StringLiteral n);
+  public IntermediateForm visit(StringType n);
+  public IntermediateForm visit(True n);
+  public IntermediateForm visit(Type n);
+  public IntermediateForm visit(VariableDeclaration n);
+  public IntermediateForm visit(VariableDeclarations n);
+  public IntermediateForm visit(While n);
+  public IntermediateForm visit(NumericExp n);
+  public IntermediateForm visit(Umin n);
+  public IntermediateForm visit(Uprinc n);
+  public IntermediateForm visit(Uprdec n);
+  public IntermediateForm visit(Upinc n);
+  public IntermediateForm visit(Updec n);
+  public IntermediateForm visit(AddAssign n);
+  public IntermediateForm visit(MinAssign n);
+  public IntermediateForm visit(MulAssign n);
+  public IntermediateForm visit(DivAssign n);
+  public IntermediateForm visit(BooleanExp n);
+  public IntermediateForm visit(LogicalExp n);
+  public IntermediateForm visit(LiteralExp n);
+  public IntermediateForm visit(LParExpRPar n);
+  public IntermediateForm visit(VariableDeclarator n);
+  public IntermediateForm visit(VariableDeclarators n);
+  public IntermediateForm visit(ForInit n);
+  public IntermediateForm visit(SwitchCaseExpList n);
+  public IntermediateForm visit(SwitchCaseStatement n);
+  public IntermediateForm visit(SwitchCaseStatements n);
+  public IntermediateForm visit(SwitchStatement n);
+  public IntermediateForm visit(Return n);
+  public IntermediateForm visit(Read n);
+  public IntermediateForm visit(Write n);
+  public IntermediateForm visit(Arguments n);
+  public IntermediateForm visit(Program n);
+  public IntermediateForm visit(FunctionCall n);
+  public IntermediateForm visit(ElseIfStatement n);
+  public IntermediateForm visit(ElseIfStatements n);
+  public IntermediateForm visit(NullType n);
+  public IntermediateForm visit(ErrorType n);
+  public IntermediateForm visit(Argument n);
 }
