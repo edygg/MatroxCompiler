@@ -4,18 +4,40 @@ import edu.unitec.visitor.Visitor;
 import edu.unitec.visitor.TypeVisitor;
 
 public class ElseIfStatement {
-  public Exp e;
-  public Statements s;
 
-  public ElseIfStatement(Exp ae, Statements as) {
-    e=ae; s=as;
-  }
+    public Exp e;
+    public Statements s;
 
-  public void accept(Visitor v) {
-    v.visit(this);
-  }
+    private int column;
 
-  public Type accept(TypeVisitor v) {
-    return v.visit(this);
-  }
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    private int line;
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
+    public ElseIfStatement(Exp ae, Statements as) {
+        e = ae;
+        s = as;
+    }
+
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
+
+    public Type accept(TypeVisitor v) {
+        return v.visit(this);
+    }
 }

@@ -216,7 +216,7 @@ parser code {:
     }
 
     public void unrecovered_syntax_error(Symbol cur_token) {
-        System.err.println("Please check your program's syntax before line: " + (cur_token.left + 1) + ", col: " + (cur_token.left + 1));
+        System.err.println("Please check your program's syntax before line: " + (cur_token.left + 1) + ", col: " + (cur_token.right + 1));
     }
 
     public void report_fatal_error(String message, Object info) {
@@ -320,33 +320,33 @@ statements ::= statement:stmt statements:stmts    {: stmts.add( stmt); RESULT = 
 ;
 
 
-statement ::= if_statement:istmt                    {: RESULT = istmt; :}
-            | while_statement:wstmt                 {: RESULT = wstmt; :}
-            | for_statement:fstmt                   {: RESULT = fstmt; :}
-            | switch_statement:sstmt                {: RESULT = sstmt; :}
-            | variable_declaration:vdon SEMICOLON   {: RESULT = vdon; :}
-            | variable_declarator:vdor SEMICOLON    {: RESULT = vdor; :}
-            | RETURN exp:e SEMICOLON                {: RESULT = new Return(e);  :}
-            | READ exp:e SEMICOLON                  {: RESULT = new Read(e); :}
-            | WRITE exp:e SEMICOLON                 {: RESULT = new Write(e); :}
-            | exp:e SEMICOLON                       {: RESULT = e ; :}
+statement ::= if_statement:istmt                    {: RESULT = istmt; RESULT.setLine(istmtleft); RESULT.setColumn(istmtright); :}
+            | while_statement:wstmt                 {: RESULT = wstmt; RESULT.setLine(wstmtleft); RESULT.setColumn(wstmtright); :}
+            | for_statement:fstmt                   {: RESULT = fstmt; RESULT.setLine(fstmtleft); RESULT.setColumn(fstmtright); :}
+            | switch_statement:sstmt                {: RESULT = sstmt; RESULT.setLine(sstmtleft); RESULT.setColumn(sstmtright); :}
+            | variable_declaration:vdon SEMICOLON   {: RESULT = vdon;  RESULT.setLine(vdonleft); RESULT.setColumn(vdonright);   :}
+            | variable_declarator:vdor SEMICOLON    {: RESULT = vdor;  RESULT.setLine(vdorleft); RESULT.setColumn(vdorright);   :}
+            | RETURN exp:e SEMICOLON                {: RESULT = new Return(e); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+            | READ exp:e SEMICOLON                  {: RESULT = new Read(e); RESULT.setLine(eleft); RESULT.setColumn(eright);   :}
+            | WRITE exp:e SEMICOLON                 {: RESULT = new Write(e); RESULT.setLine(eleft); RESULT.setColumn(eright);  :}
+            | exp:e SEMICOLON                       {: RESULT = e ;  RESULT.setLine(eleft); RESULT.setColumn(eright);           :}
             | SEMICOLON
 ;
 
-exp ::= numeric_exp:e                           {: RESULT = e; :}
-        | boolean_exp:e                         {: RESULT = e; :}
-        | logical_exp:e                         {: RESULT = e; :}
-        | literal_exp:e                         {: RESULT = e; :}
-        | function_call:fc                      {: RESULT = fc; :}
-        | IDENTIFIER:i                          {: RESULT = new Identifier(i); :}
-        | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); :}
+exp ::= numeric_exp:e                           {: RESULT = e; RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+        | boolean_exp:e                         {: RESULT = e; RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+        | logical_exp:e                         {: RESULT = e; RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+        | literal_exp:e                         {: RESULT = e; RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+        | function_call:fc                      {: RESULT = fc; RESULT.setLine(fcleft); RESULT.setColumn(fcright);  :}
+        | IDENTIFIER:i                          {: RESULT = new Identifier(i); RESULT.setLine(ileft); RESULT.setColumn(iright); :}
+        | LPAR exp:e RPAR                       {: RESULT = new LParExpRPar(e); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
         | error SEMICOLON
 ;
 
-literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); :}
-                | DOUBLENUMBER:d                {: RESULT = new DoubleLiteral(d); :}
-                | STRINGCONTENT:s               {: RESULT = new StringLiteral(s); :}
-                | CHARCONTENT:c                 {: RESULT = new CharLiteral(c); :}
+literal_exp ::= INTNUMBER:i                     {: RESULT = new IntegerLiteral(i); RESULT.setLine(ileft); RESULT.setColumn(iright); :}
+                | DOUBLENUMBER:d                {: RESULT = new DoubleLiteral(d);  RESULT.setLine(dleft); RESULT.setColumn(dright); :}
+                | STRINGCONTENT:s               {: RESULT = new StringLiteral(s); RESULT.setLine(sleft); RESULT.setColumn(sright); :}
+                | CHARCONTENT:c                 {: RESULT = new CharLiteral(c);  RESULT.setLine(cleft); RESULT.setColumn(cright); :}
 ;
 
 numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
@@ -355,49 +355,49 @@ numeric_exp ::= MIN exp:e                       {: RESULT = new Umin(e); :}
                 //%prec UPRINC
                 //| MIN MIN exp:e               {: RESULT = new Uprdec(e); :}
                 //%prec UPRDEC
-                | exp:e ADD ADD                 {: RESULT = new Upinc(e); :}
+                | exp:e ADD ADD                 {: RESULT = new Upinc(e); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
                 %prec UPINC
-                | exp:e MIN MIN                 {: RESULT = new Updec(e); :}
+                | exp:e MIN MIN                 {: RESULT = new Updec(e); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
                 %prec UPDEC
-                | exp:e1 ADD exp:e2             {: RESULT = new Add(e1, e2); :}
-                | exp:e1 ADD ASSIGN exp:e2      {: RESULT = new AddAssign(e1,e2); :}
+                | exp:e1 ADD exp:e2             {: RESULT = new Add(e1, e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+                | exp:e1 ADD ASSIGN exp:e2      {: RESULT = new AddAssign(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
                 %prec ASSIGNADD
-                | exp:e1 MIN exp:e2             {: RESULT = new Min(e1,e2); :}
-                | exp:e1 MIN ASSIGN exp:e2      {: RESULT = new MinAssign(e1,e2); :}
+                | exp:e1 MIN exp:e2             {: RESULT = new Min(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+                | exp:e1 MIN ASSIGN exp:e2      {: RESULT = new MinAssign(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
                 %prec ASSIGNMIN
-                | exp:e1 MUL exp:e2             {: RESULT = new Mul(e1,e2); :}
-                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); :}
+                | exp:e1 MUL exp:e2             {: RESULT = new Mul(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+                | exp:e1 MUL ASSIGN exp:e2      {: RESULT = new MulAssign(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
                 %prec ASSIGNMUL
-                | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); :}
-                | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); :}
+                | exp:e1 DIV exp:e2             {: RESULT = new Div(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+                | exp:e1 DIV ASSIGN exp:e2      {: RESULT = new DivAssign(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
                 %prec ASSIGNDIV
 ;
 
-boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); :}
-            | exp:e1 LESS exp:e2                {: RESULT = new Less(e1,e2); :}
-            | exp:e1 GREATEREQ exp:e2           {: RESULT = new GreaterEq(e1,e2); :}
-            | exp:e1 LESSEQ exp:e2              {: RESULT = new LessEq(e1,e2); :}
-            | exp:e1 EQU exp:e2                 {: RESULT = new Equ(e1,e2); :}
-            | exp:e1 NEQ exp:e2                 {: RESULT = new Neq(e1,e2); :}
+boolean_exp ::= exp:e1 GREATER exp:e2           {: RESULT = new Greater(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+            | exp:e1 LESS exp:e2                {: RESULT = new Less(e1,e2);  RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+            | exp:e1 GREATEREQ exp:e2           {: RESULT = new GreaterEq(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+            | exp:e1 LESSEQ exp:e2              {: RESULT = new LessEq(e1,e2);  RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+            | exp:e1 EQU exp:e2                 {: RESULT = new Equ(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+            | exp:e1 NEQ exp:e2                 {: RESULT = new Neq(e1,e2);  RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
 ;
 
-logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); :}
-           | exp:e1 OR exp:e2                   {: RESULT = new Or(e1,e2); :}
-           | exp:e1 AND exp:e2                  {: RESULT = new And(e1,e2); :}
+logical_exp ::= NOT exp:e                       {: RESULT = new Not(e); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
+           | exp:e1 OR exp:e2                   {: RESULT = new Or(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
+           | exp:e1 AND exp:e2                  {: RESULT = new And(e1,e2); RESULT.setLine(e1left); RESULT.setColumn(e1right); :}
            | TRUE                               {: RESULT = new True(); :}
            | FALSE                              {: RESULT = new False(); :}
 ;
 
-while_statement ::= WHILE LPAR exp:e RPAR statements:stmts END                              {: RESULT = new While(e, stmts); :}
+while_statement ::= WHILE LPAR exp:e RPAR statements:stmts END                              {: RESULT = new While(e, stmts); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
                 | error exp
 ;
 
-switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END              {: RESULT = new SwitchStatement(e, scstmts); :}
+switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END              {: RESULT = new SwitchStatement(e, scstmts); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
                 | error switch_case_statement
 ;
 
 switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.add( scstmt); RESULT = scstmts; :}
-                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); RESULT.add( scstmt);  :}
+                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); :}
 ;
 
 switch_case_statement ::= CASE switch_case_exp_list:scexpl statements:stmts END             {: RESULT = new SwitchCaseStatement(scexpl, stmts); :}
@@ -411,26 +411,26 @@ switch_case_exp_list ::= exp:e COMMA switch_case_exp_list:scexpl                
 if_statement ::= IF LPAR exp:e RPAR statements:stmts END                                    {: RESULT = new If(e, stmts); :}
                 | IF LPAR exp:e RPAR statements:stmts1 ELSE statements:stmts2 END           {: RESULT = new If(e, stmts1, stmts2); :}
                 | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts END       {: RESULT = new If(e, stmts1, eistmts); :}
-                | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts ELSE statements:stmts2 END      {: RESULT = new If(e, stmts1, eistmts, stmts2); :}
+                | IF LPAR exp:e RPAR statements:stmts1 else_if_statements:eistmts ELSE statements:stmts2 END     {: RESULT = new If(e, stmts1, eistmts, stmts2); :}
                 | error END
 ;
 
-else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.add( eistmt); RESULT = eistmts;  :}
-                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.add( eistmt); :}
+else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.add( eistmt);  :}
+                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); :}
+;
+ 
+else_if_statement ::= ELSEIF LPAR exp:e RPAR statements:stmts                               {: RESULT = new ElseIfStatement(e, stmts); RESULT.setLine(stmtsleft); RESULT.setColumn(stmtsright); RESULT.setLine(eleft); RESULT.setColumn(eright); :}
 ;
 
-else_if_statement ::= ELSEIF LPAR exp:e RPAR statements:stmts                               {: RESULT = new ElseIfStatement(e, stmts); :}
-;
-
-variable_declaration ::= type:t variable_declarators:vdors                                 {: RESULT = new VariableDeclaration(t, vdors); :}
-                        | type:t IDENTIFIER:i                                              {: RESULT = new VariableDeclaration(t, new Identifier(i)); :}
+variable_declaration ::= type:t variable_declarators:vdors                                 {: RESULT = new VariableDeclaration(t, vdors); RESULT.setLine(vdorsleft); RESULT.setColumn(vdorsright); :}
+                        | type:t IDENTIFIER:i                                              {: RESULT = new VariableDeclaration(t, new Identifier(i)); RESULT.setLine(ileft); RESULT.setColumn(iright); :}
 ;
 
 variable_declarators ::= variable_declarator:vdor COMMA variable_declarators:vdors          {: vdors.add( vdor); RESULT = vdors; :}
                         | variable_declarator:vdor                                          {: RESULT = new VariableDeclarators(); RESULT.add( vdor); :}
 ;
 
-variable_declarator ::= IDENTIFIER:i ASSIGN exp:e                                           {: RESULT = new VariableDeclarator(new Identifier(i), e); :}
+variable_declarator ::= IDENTIFIER:i ASSIGN exp:e                                           {: RESULT = new VariableDeclarator(new Identifier(i), e); RESULT.setLine(ileft); RESULT.setColumn(iright); :}
 ;
 
 parameters ::= parameter:p COMMA parameters:ps                                              {: ps.add( p); RESULT = ps; :}
