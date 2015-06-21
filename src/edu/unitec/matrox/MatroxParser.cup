@@ -292,6 +292,7 @@ non terminal VariableDeclarator variable_declarator;
 non terminal Parameters parameters;
 non terminal Parameter parameter;
 non terminal Arguments arguments;
+non terminal Argument argument;
 non terminal Type type;
 non terminal ForInit for_init;
 non terminal For for_statement;
@@ -439,8 +440,11 @@ parameters ::= parameter:p COMMA parameters:ps                                  
 parameter ::= type:t IDENTIFIER:i                                                           {: RESULT = new Parameter(t, new Identifier(i)); :}
 ;
 
-arguments ::= exp:e COMMA arguments:args                                                    {: args.add( e); RESULT = args; :}
-            | exp:e                                                                         {: RESULT = new Arguments(); RESULT.add( e); :}
+arguments ::= argument:a COMMA arguments:args                                               {: args.add(a); RESULT = args; :}
+            | argument:a                                                                    {: RESULT = new Arguments(); RESULT.add(a); :}
+;
+
+argument ::= exp:e                                                                          {: RESULT = new Argument(e); :}                                                                          
 ;
 
 type ::= INTEGER                                                                            {: RESULT = new IntegerType(); :}
@@ -470,6 +474,7 @@ function_declaration ::= FUNCTION type:t IDENTIFIER:i LBRACK parameters:ps RBRAC
            | error statement
 ;
 
-function_call ::= IDENTIFIER:i LBRACK arguments:args RBRACK                                                             {: RESULT = new FunctionCall(new Identifier(i), args); :}                                                                {:  :}
+function_call ::= IDENTIFIER:i LBRACK arguments:args RBRACK                                                             {: RESULT = new FunctionCall(new Identifier(i), args); :}
+                | IDENTIFIER:i LBRACK RBRACK                                                                            {: RESULT = new FunctionCall(new Identifier(i), new Arguments()); :}
                 | error RBRACK
 ;

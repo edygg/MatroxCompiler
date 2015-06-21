@@ -347,6 +347,10 @@ public class DepthFirstVisitor implements Visitor {
     public void visit(Arguments n) {
 
     }
+    
+    public void visit(Argument n) {
+        
+    }
 
     public void visit(ElseIfStatements n) {
 

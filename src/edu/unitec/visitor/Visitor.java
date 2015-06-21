@@ -79,4 +79,5 @@ public interface Visitor {
   public void visit(ElseIfStatements n);
   public void visit(NullType n);
   public void visit(ErrorType n);
+  public void visit(Argument n);
 }

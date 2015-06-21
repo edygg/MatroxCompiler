@@ -9,12 +9,12 @@ public class Arguments {
       list = new Vector();
    }
 
-   public void add(Exp n) {
+   public void add(Argument n) {
       list.add(0, n);
    }
 
-   public Exp elementAt(int i)  { 
-      return (Exp)list.elementAt(i); 
+   public Argument elementAt(int i)  { 
+      return (Argument)list.elementAt(i); 
    }
 
    public int size() { 

@@ -3,9 +3,7 @@
 
 function integer main[]
 
-	integer contador<-1;
-	integer num<-0; 
-	integer factorial<-0;
+	integer contador<-1, num<-0, factorial <- 0;
 
 	print("Ingrese su numero: ");
 	get_value num;

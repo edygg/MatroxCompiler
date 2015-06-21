@@ -12,6 +12,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     private String scope;
     private Type currentFunctionReturnType;
     private SemanticAnalysis semanticTable;
+    private int currentDirection;
 
     public TypeDepthFirstVisitor(SemanticAnalysis semanticTable) {
         this.semanticTable = semanticTable;
@@ -23,7 +24,9 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(Program n) {
         FunctionDeclarations allFunctions = n.fds;
-
+        
+        String currentScope = Scope.genNewScope();
+        scope = currentScope;
         //Verificando función por función si están correctamente declaradas
         for (int i = 0; i < allFunctions.size(); i++) {
             allFunctions.elementAt(i).accept(this);
@@ -34,9 +37,27 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             FunctionDeclaration currentFunction = allFunctions.elementAt(i);
             currentFunctionReturnType = currentFunction.t;
             Statements currentStatements = currentFunction.ss;
+            currentScope = Scope.genNewScope();
+            scope += currentScope;
+            currentDirection = 0;
+            
+            // Metiendo los parámetros de la función en la tabla de simbolos
+            if (currentFunction.ps != null) {
+                for (int j = 0; j < currentFunction.ps.size(); j++) {
+                    Parameter currentParam = currentFunction.ps.elementAt(j);
+                    SemanticTableNode infoParam = new SemanticVariableTableNode(currentParam.t, currentParam.i.toString(), scope, true, currentDirection);
+                    currentDirection += semanticTable.sizeOf(currentParam.t);
+                    if (!semanticTable.addID(currentParam.i.toString(), scope, infoParam)) {
+                        errorComplain(currentParam.i.toString() + " is already taken.");
+                    }
+                }
+            }
+            
             for (int j = 0; j < currentStatements.size(); j++) {
                 currentStatements.elementAt(j).accept(this);
             }
+            
+            scope = scope.replaceAll(currentScope, "");
         }
 
         return new NullType();
@@ -58,7 +79,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         }
         //Comprobación de tipos para la función
         SemanticFunctionTableNode neoNode = new SemanticFunctionTableNode(returnType, paramTypes, id.toString(), scope);
-        if (!semanticTable.addID(id.toString(), neoNode)) {
+        if (!semanticTable.addID(id.toString(), scope, neoNode)) {
             errorComplain(id.toString() + "is already taken.");
         }
 
@@ -94,12 +115,15 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(If n) {
         Type trueExp = n.e.accept(this);
         if (!(trueExp instanceof BooleanType)) {
-            //Mala expresión
+            errorComplain("Boolean expresson expected (if)");
             return new ErrorType();
         }
 
         for (int i = 0; i < n.s1.size(); i++) {
+            String currentScope = Scope.genNewScope();
+            scope += currentScope;
             n.s1.elementAt(i).accept(this);
+            scope = scope.replaceAll(currentScope, "");
         }
         
         if (n.eis != null) {
@@ -110,7 +134,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         if (n.s2 != null) {
             for (int i = 0; i < n.s2.size(); i++) {
+                String currentScope = Scope.genNewScope();
+                scope += currentScope;
                 n.s2.elementAt(i).accept(this);
+                scope = scope.replaceAll(currentScope, "");
             }
         }
         
@@ -121,12 +148,15 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type trueExpType = n.e.accept(this);
         
         if (!(trueExpType instanceof BooleanType)) {
-            //Mala expresión
+            errorComplain("Boolean expresson expected (elseif)");
             return new ErrorType();
         }
         
         for (int i = 0; i < n.s.size(); i++) {
+            String currentScope = Scope.genNewScope();
+            scope += currentScope;
             n.s.elementAt(i).accept(this);
+            scope = scope.replaceAll(currentScope, "");
         }
         return new NullType();
     }
@@ -135,12 +165,15 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type trueExpType = n.e.accept(this);
         
         if (!(trueExpType instanceof BooleanType)) {
-            //No es booleana la exp
+            errorComplain("Boolean expresson expected (while)");
             return new ErrorType();
         }
 
         for (int i = 0; i < n.s.size(); i++) {
+            String currentScope = Scope.genNewScope();
+            scope += currentScope;
             n.s.elementAt(i).accept(this);
+            scope = scope.replaceAll(currentScope, "");
         }
         return null;
     }
@@ -150,7 +183,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         Type centerCondType = n.e1.accept(this);
         if (!(centerCondType instanceof BooleanType)) {
-            //No es una expresión booleana
+            errorComplain("Boolean expresson expected (for)");
             return new ErrorType();
         }
            
@@ -161,7 +194,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             n.vd.accept(this);
 
         for (int i = 0; i < n.s.size(); i++) {
+            String currentScope = Scope.genNewScope();
+            scope += currentScope;
             n.s.elementAt(i).accept(this);
+            scope = scope.replaceAll(currentScope, "");
         }
         return new NullType();
     }
@@ -178,13 +214,59 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(SwitchStatement n) {
 
-        n.e.accept(this);
-
-        for (int i = 0; i < n.scs.size(); i++) {
-            n.scs.elementAt(i).accept(this);
+        //Verificar si es identifier
+        if (n.e instanceof Identifier) {
+            Type expType = n.e.accept(this);
+            if (!(expType instanceof CharType || expType instanceof IntegerType)) {
+                //No es ni caracter ni entero
+                return new ErrorType();
+            }
+        } else {
+            //La expresión no es una viable
+            return new ErrorType();
         }
 
-        return null;
+        Vector cases = new Vector();
+        for (int i = 0; i < n.scs.size(); i++) {
+            SwitchCaseStatement currentSetCase = n.scs.elementAt(i);
+            for (int j = 0; j < currentSetCase.scel.size(); j++) {
+                Exp currentCase = currentSetCase.scel.elementAt(j);
+                Type currentCaseType = currentCase.accept(this);
+                //Tiene que ser Literal y del mismo tipo
+                if (currentCase instanceof IntegerLiteral || currentCase instanceof CharLiteral) {
+                    Type expType = n.e.accept(this);
+                    if (!(expType.equals(currentCaseType))) {
+                       //Error no es del mismo tipo 
+                    }
+                    
+                    if (currentCase instanceof IntegerLiteral) {
+                        if (cases.contains(((IntegerLiteral) currentCase).i)) {
+                            //error el case está repetido
+                        } else {
+                            cases.add(((IntegerLiteral) currentCase).i);
+                        }
+                    } else {
+                        if (cases.contains(((CharLiteral) currentCase).i)) {
+                            //error el case está repetido
+                        } else {
+                            cases.add(((CharLiteral) currentCase).i);
+                        }
+                    }
+                    
+                } else {
+                    //error no es un literal
+                }
+            }
+            
+            for (int j = 0; j < currentSetCase.s.size(); j++) {
+                String currentScope = Scope.genNewScope();
+                scope += currentScope;
+                currentSetCase.s.elementAt(j).accept(this);
+                scope = scope.replaceAll(currentScope, "");
+            }
+        }
+
+        return new NullType();
     }
 
     public Type visit(SwitchCaseStatement n) {
@@ -203,9 +285,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(VariableDeclaration n) {
         if (n.i != null) {
             //Agregar el nodo a la tabla de simbolos
-            SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, n.i.toString(), scope);
-            if (!semanticTable.addID(n.i.toString(), neoVar)) {
-                //El identificador ya existe
+            SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, n.i.toString(), scope, false, currentDirection);
+            currentDirection += SemanticAnalysis.sizeOf(n.t);
+            if (!semanticTable.addID(n.i.toString(), scope, neoVar)) {
+                errorComplain(n.i.toString() + " is already taken.");
                 return new ErrorType();
             }
             return new NullType();
@@ -214,14 +297,14 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (n.vds != null) {
             for (int i = 0; i < n.vds.size(); i++) {
                 VariableDeclarator currentVar = n.vds.elementAt(i);
-                SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, currentVar.i.toString(), scope);
-                if (!semanticTable.addID(currentVar.i.toString(), neoVar)) {
-                    //El identificador existe
+                SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, currentVar.i.toString(), scope, false, currentDirection);
+                currentDirection += SemanticAnalysis.sizeOf(n.t);
+                if (!semanticTable.addID(currentVar.i.toString(), scope, neoVar)) {
+                    errorComplain(n.i.toString() + " is already taken.");
                     return new ErrorType();
                 }
-                
-                return new NullType();
             }
+            return new NullType();
         }
 
         return new ErrorType();
@@ -230,13 +313,13 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(VariableDeclarator n) {
         SemanticVariableTableNode varInfo = null;
         
-        if (semanticTable.findID(n.i.toString()) instanceof SemanticVariableTableNode) {
-            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.i.toString());
+        if (semanticTable.findID(n.i.toString(), scope) instanceof SemanticVariableTableNode) {
+            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.i.toString(), scope);
             Type expType = n.e.accept(this);
             if (expType.equals(varInfo.getType())) {
                 return new NullType();
             } else {
-                //POrque la exp no es asignamble
+                errorComplain(varInfo.getType().getClass().getSimpleName() + " expected.");
                 return new ErrorType();
             }
         } else {
@@ -249,7 +332,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type expRetType = n.e.accept(this);
         
         if (!(currentFunctionReturnType.equals(expRetType))) {
-            //Typo de retorno no es el correcto
+            errorComplain("Return type must be " + currentFunctionReturnType.getClass().getSimpleName());
             return new ErrorType();
         }
             
@@ -258,7 +341,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(Read n) {
         if (!(n.e instanceof Identifier)) {
-            //No se está asignando una lectura a un identificador
+            errorComplain("Identifier expected.");
             return new ErrorType();
         }
         return new NullType();
@@ -364,8 +447,8 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(FunctionCall n) {
         SemanticFunctionTableNode functionInfo = null;
-        if (semanticTable.findID(n.i.toString()) instanceof SemanticFunctionTableNode) {
-            functionInfo = (SemanticFunctionTableNode) semanticTable.findID(n.i.toString());
+        if (semanticTable.findID(n.i.toString(), scope) instanceof SemanticFunctionTableNode) {
+            functionInfo = (SemanticFunctionTableNode) semanticTable.findID(n.i.toString(), scope);
             Vector<Type> paramTypes = functionInfo.getParams();
             Arguments args = n.as;
             //Verificar cuando sea sobrecarga
@@ -400,11 +483,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(Identifier n) {
         SemanticVariableTableNode varInfo = null;
-        if (semanticTable.findID(n.toString()) instanceof SemanticVariableTableNode) {
-            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.toString());
+        if (semanticTable.findID(n.toString(), scope) instanceof SemanticVariableTableNode) {
+            varInfo = (SemanticVariableTableNode) semanticTable.findID(n.toString(), scope);
             return varInfo.getType();
         } else {
-            //No es una variable
+            errorComplain(n.toString() + " must be declarated first.");
             return new ErrorType();
         }
     }
@@ -723,6 +806,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(Arguments n) {
         return null;
+    }
+    
+    public Type visit(Argument n) {
+        return n.e.accept(this);
     }
 
     public Type visit(ElseIfStatements n) {
