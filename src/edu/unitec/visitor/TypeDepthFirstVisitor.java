@@ -80,7 +80,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         //Comprobación de tipos para la función
         SemanticFunctionTableNode neoNode = new SemanticFunctionTableNode(returnType, paramTypes, id.toString(), scope);
         if (!semanticTable.addID(id.toString(), scope, neoNode)) {
-            errorComplain(id.toString() + "is already taken.");
+            errorComplain(id.toString() + "is already taken.", id.getLine(), id.getColumn());
         }
 
         return new NullType();
@@ -115,7 +115,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(If n) {
         Type trueExp = n.e.accept(this);
         if (!(trueExp instanceof BooleanType)) {
-            errorComplain("Boolean expresson expected (if)");
+            errorComplain("Boolean expresson expected (if)", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
 
@@ -148,7 +148,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type trueExpType = n.e.accept(this);
         
         if (!(trueExpType instanceof BooleanType)) {
-            errorComplain("Boolean expresson expected (elseif)");
+            errorComplain("Boolean expresson expected (elseif)", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
         
@@ -165,7 +165,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type trueExpType = n.e.accept(this);
         
         if (!(trueExpType instanceof BooleanType)) {
-            errorComplain("Boolean expresson expected (while)");
+            errorComplain("Boolean expresson expected (while)", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
 
@@ -183,7 +183,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         Type centerCondType = n.e1.accept(this);
         if (!(centerCondType instanceof BooleanType)) {
-            errorComplain("Boolean expresson expected (for)");
+            errorComplain("Boolean expresson expected (for)", n.e1.getLine(), n.e2.getColumn());
             return new ErrorType();
         }
            
@@ -218,11 +218,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (n.e instanceof Identifier) {
             Type expType = n.e.accept(this);
             if (!(expType instanceof CharType || expType instanceof IntegerType)) {
-                //No es ni caracter ni entero
+                errorComplain("Only integer or character types are allowed in switch.", n.e.getLine(), n.e.getColumn());
                 return new ErrorType();
             }
         } else {
-            //La expresión no es una viable
+            errorComplain("Identifier expected in switch.", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
 
@@ -236,25 +236,25 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
                 if (currentCase instanceof IntegerLiteral || currentCase instanceof CharLiteral) {
                     Type expType = n.e.accept(this);
                     if (!(expType.equals(currentCaseType))) {
-                       //Error no es del mismo tipo 
+                        errorComplain("Case option must be same type as switch.", n.e.getLine(), n.e.getColumn());
                     }
                     
                     if (currentCase instanceof IntegerLiteral) {
                         if (cases.contains(((IntegerLiteral) currentCase).i)) {
-                            //error el case está repetido
+                            errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
                         } else {
                             cases.add(((IntegerLiteral) currentCase).i);
                         }
                     } else {
                         if (cases.contains(((CharLiteral) currentCase).i)) {
-                            //error el case está repetido
+                            errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
                         } else {
                             cases.add(((CharLiteral) currentCase).i);
                         }
                     }
                     
                 } else {
-                    //error no es un literal
+                    errorComplain("Integer or character literal expected.", currentCase.getLine(), currentCase.getColumn());
                 }
             }
             
@@ -288,7 +288,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, n.i.toString(), scope, false, currentDirection);
             currentDirection += SemanticAnalysis.sizeOf(n.t);
             if (!semanticTable.addID(n.i.toString(), scope, neoVar)) {
-                errorComplain(n.i.toString() + " is already taken.");
+                errorComplain(n.i.toString() + " is already taken.", n.i.getLine(), n.i.getColumn());
                 return new ErrorType();
             }
             return new NullType();
@@ -300,7 +300,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
                 SemanticVariableTableNode neoVar = new SemanticVariableTableNode(n.t, currentVar.i.toString(), scope, false, currentDirection);
                 currentDirection += SemanticAnalysis.sizeOf(n.t);
                 if (!semanticTable.addID(currentVar.i.toString(), scope, neoVar)) {
-                    errorComplain(n.i.toString() + " is already taken.");
+                    errorComplain(n.i.toString() + " is already taken.", n.i.getLine(), n.i.getColumn());
                     return new ErrorType();
                 }
             }
@@ -319,11 +319,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             if (expType.equals(varInfo.getType())) {
                 return new NullType();
             } else {
-                errorComplain(varInfo.getType().getClass().getSimpleName() + " expected.");
+                errorComplain(varInfo.getType().getClass().getSimpleName() + " expected.", n.e.getLine(), n.e.getColumn());
                 return new ErrorType();
             }
         } else {
-            //No se encuentra el id
+            errorComplain(n.i.toString() + " must be declared.", n.i.getLine(), n.i.getColumn());
             return new ErrorType();
         }
     }
@@ -332,7 +332,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Type expRetType = n.e.accept(this);
         
         if (!(currentFunctionReturnType.equals(expRetType))) {
-            errorComplain("Return type must be " + currentFunctionReturnType.getClass().getSimpleName());
+            errorComplain("Return type must be " + currentFunctionReturnType.getClass().getSimpleName() + ".", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
             
@@ -341,7 +341,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
 
     public Type visit(Read n) {
         if (!(n.e instanceof Identifier)) {
-            errorComplain("Identifier expected.");
+            errorComplain("Identifier expected.", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
         return new NullType();
@@ -457,14 +457,17 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
                     Type currentArgType = args.elementAt(i).accept(this);
                     if (!(currentArgType.equals(paramTypes.get(i)))) {
                         //El parámetro encontrado no es del tipo que corresponde en esa posición
+                        errorComplain("Parameter does not match. Check function declaration.", n.getLine(), n.getColumn());
                         return new ErrorType();
                     }
                 }
             } else {
                 //La cantidad de parámetros es diferente
+                errorComplain("Parameter count does not match. Check function declaration.", n.getLine(), n.getColumn());
             }
         } else {
             //El identificador no es una función
+            errorComplain(n.i.toString() + " must be declarated.", n.i.getLine(), n.i.getColumn());
             return new ErrorType();
         }
         
@@ -487,7 +490,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             varInfo = (SemanticVariableTableNode) semanticTable.findID(n.toString(), scope);
             return varInfo.getType();
         } else {
-            errorComplain(n.toString() + " must be declarated first.");
+            errorComplain(n.toString() + " must be declarated first.", n.getLine(), n.getColumn());
             return new ErrorType();
         }
     }
@@ -511,6 +514,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(Umin n) {
         Type expType = n.e1.accept(this);
         if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            errorComplain("Integer or Number expected.", n.getLine(), n.getColumn());
             return new ErrorType();
         } else {
             return expType;
@@ -528,6 +532,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(Upinc n) {
         Type expType = n.e1.accept(this);
         if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            errorComplain("Integer or Number expected.", n.getLine(), n.getColumn());
             return new ErrorType();
         } else {
             return expType;
@@ -537,6 +542,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     public Type visit(Updec n) {
         Type expType = n.e1.accept(this);
         if (!(expType instanceof IntegerType || expType instanceof DoubleType)) {
+            errorComplain("Integer or Number expected.", n.getLine(), n.getColumn());
             return new ErrorType();
         } else {
             return expType;
@@ -550,9 +556,13 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType || leftExp instanceof StringType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers, integers or strings", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
-
+        
         return new ErrorType();
     }
 
@@ -563,7 +573,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType || leftExp instanceof StringType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers, integers or strings", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -576,7 +590,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -589,7 +607,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -602,7 +624,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -615,7 +641,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -628,7 +658,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -641,7 +675,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             if (leftExp instanceof DoubleType || leftExp instanceof IntegerType) {
                 return leftExp;
+            } else {
+                errorComplain("Expressions must be numbers or integers", n.getLine(), n.getColumn());
             }
+        } else {
+            errorComplain("Expressions must be same type.", n.getLine(), n.getColumn());
         }
 
         return new ErrorType();
@@ -654,7 +692,8 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -665,7 +704,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -676,7 +715,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -687,7 +726,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -698,7 +737,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -709,7 +748,7 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         if (leftExp.equals(rightExp)) {
             return new BooleanType();
         }
-
+        errorComplain("incomparable types.", n.getLine(), n.getColumn());
         return new ErrorType();
     }
 
@@ -718,8 +757,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         if (exp instanceof BooleanType)
             return exp;
-        else 
+        else {
+            errorComplain("Boolean type expected.", n.getLine(), n.getColumn());
             return new ErrorType();
+        } 
     }
 
     public Type visit(Or n) {
@@ -728,8 +769,11 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         if (leftExp instanceof BooleanType && rightExp instanceof BooleanType)
             return leftExp;
-        else 
+        else {
+            errorComplain("incomparable types.", n.getLine(), n.getColumn());
             return new ErrorType();
+        } 
+            
     }
 
     public Type visit(And n) {
@@ -738,8 +782,10 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         
         if (leftExp instanceof BooleanType && rightExp instanceof BooleanType)
             return leftExp;
-        else 
+        else {
+            errorComplain("incomparable types.", n.getLine(), n.getColumn());
             return new ErrorType();
+        } 
     }
 
     public Type visit(True n) {
