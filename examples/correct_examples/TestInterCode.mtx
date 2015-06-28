@@ -1,39 +1,11 @@
 function integer main[]
-	integer num <- 1;
 
-	get_value num;
+	integer num1 <- 1;
+	integer num2 <- 2;
+	integer ans <- 0;
 
-	switch (num)
-		
-		option 1
-			print "Hola";
-		end
+	ans <- num1 / num2;
 
-		option 2
-			print "Hola";
-		end
-
-		option 3
-			print "Hola";
-		end
-
-		option 4
-			print "Hola";
-		end
-
-		option 5
-			print "Hola";
-		end
-
-		option by_default
-			print "Hola";
-		end
-
-	end
 
 	give_back 0;
-end
-
-function void printMessage[integer text]
-	print text;
 end

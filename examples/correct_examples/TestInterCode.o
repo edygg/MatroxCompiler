@@ -1,0 +1,12 @@
+main:
+num1 := 1
+L0:
+num2 := 2
+L1:
+ans := 0
+L2:
+t0 := num1 / num2
+ans := t0
+L3:
+RET := 0
+L4:

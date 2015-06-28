@@ -39,6 +39,11 @@ public class Main {
                 IntermediateCodeGenerator icg = new IntermediateCodeGenerator(interOut, semanticTable);
                 IntermediateStatement interForm = (IntermediateStatement) icg.visit(generatedProgram);
                 icg.creatFile(interForm.buildIntermediateCode());
+                
+                
+                File interOut2 = new File(file.getAbsolutePath().replace(".mtx", "")  + ".s");
+                FinalCodeBuilder fcb = new FinalCodeBuilder(semanticTable, interOut2 ,interForm, icg.getStringsTable());
+                System.out.println(fcb.buildFinalCode());
             }
             
         } catch (FileNotFoundException ex) {
