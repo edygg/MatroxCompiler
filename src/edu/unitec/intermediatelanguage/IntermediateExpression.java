@@ -1,26 +1,31 @@
 
 package edu.unitec.intermediatelanguage;
 
+import java.util.Vector;
+
 /**
  *
  * @author Edilson Gonzalez
  */
 public class IntermediateExpression extends IntermediateForm {
     private Temp place;
-    private Label t;
-    private Label f;
+    private Vector<Label> t;
+    private Vector<Label> f;
     
-    public IntermediateExpression() { /* Nothing */ }
+    public IntermediateExpression() { 
+        this.t = new Vector();
+        this.f = new Vector();
+    }
 
     public Temp getPlace() {
         return place;
     }
 
-    public Label getTrue() {
+    public Vector<Label> getTrue() {
         return t;
     }
 
-    public Label getFalse() {
+    public Vector<Label> getFalse() {
         return f;
     }
 
@@ -28,11 +33,11 @@ public class IntermediateExpression extends IntermediateForm {
         this.place = place;
     }
 
-    public void setTrue(Label t) {
+    public void setTrue(Vector<Label> t) {
         this.t = t;
     }
 
-    public void setFalse(Label f) {
+    public void setFalse(Vector<Label> f) {
         this.f = f;
     }
 }

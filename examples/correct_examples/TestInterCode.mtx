@@ -1,0 +1,15 @@
+function integer main[]
+	integer num <- 0;
+
+	get_value num;
+
+	if ((num = (2 * 2) and num = 3) or num = 5)
+		print "Hola";
+	end
+	print (1+2-3*4/5);
+	give_back 0;
+end
+
+function void printMessage[string text]
+	print text;
+end

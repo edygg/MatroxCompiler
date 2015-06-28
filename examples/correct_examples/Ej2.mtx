@@ -12,7 +12,7 @@ function integer main[]
 		print("Esta muerto");
 	end
 
-	if (nombre = "Dave Mustaine" and (edad > 50))
+	if (nombre = "Dave Mustaine" and edad > 50 and sexo <> \V\)
 		for (integer i <- 0; i < edad; i <- i + 1)
 			print("Valor de i: ");
 			print(i);

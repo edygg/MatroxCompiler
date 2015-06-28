@@ -1,7 +1,10 @@
 package edu.unitec.matrox;
 
 import edu.unitec.ast.Program;
+import edu.unitec.intermediatelanguage.IntermediateStatement;
+import edu.unitec.visitor.IntermediateCodeGenerator;
 import edu.unitec.visitor.TypeDepthFirstVisitor;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -21,7 +24,8 @@ public class Main {
         }
         /* End Errors */
         try {
-            Lexer lexer = new Lexer(new InputStreamReader(new FileInputStream(args[0])));
+            File file = new File(args[0]);
+            Lexer lexer = new Lexer(new InputStreamReader(new FileInputStream(file)));
             Parser parse = new Parser(lexer);
             parse.parse();
             Program generatedProgram = parse.getGeneratedProgram();
@@ -29,6 +33,13 @@ public class Main {
             TypeDepthFirstVisitor tdfv = new TypeDepthFirstVisitor(semanticTable);
             generatedProgram.accept(tdfv);
             System.out.println(semanticTable);
+            if (!tdfv.hasErrors()) {
+                //Correr las generaciones de còdigo
+                File interOut = new File(file.getAbsolutePath().replace(".mtx", "")  + ".o");
+                IntermediateCodeGenerator icg = new IntermediateCodeGenerator(interOut, semanticTable);
+                IntermediateStatement interForm = (IntermediateStatement) icg.visit(generatedProgram);
+                System.out.println(interForm.buildIntermediateCode());
+            }
             
         } catch (FileNotFoundException ex) {
             System.err.println("File not found.");

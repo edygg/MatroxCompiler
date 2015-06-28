@@ -7,15 +7,19 @@ package edu.unitec.intermediatelanguage;
  */
 public class Temp {
     private static int count = 0;
-    private int num;
+    private String literal;
     
     public Temp() {
-        this.num = count++;
+        this.literal = "t" + count++;
+    }
+    
+    public Temp(String literal) {
+        this.literal = literal;
     }
 
     @Override
     public String toString() {
-        return "t" + num;
+        return literal;
     }
     
 }

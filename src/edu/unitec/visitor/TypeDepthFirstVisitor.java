@@ -13,15 +13,22 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
     private Type currentFunctionReturnType;
     private SemanticAnalysis semanticTable;
     private int currentDirection;
+    private boolean hasErrors;
 
     public TypeDepthFirstVisitor(SemanticAnalysis semanticTable) {
         this.semanticTable = semanticTable;
+        hasErrors = false;
     }
 
     public void errorComplain(String message, int line, int col) {
         System.err.println(message + "\nError at line: " + (line + 1) + ", col: " + (col + 1) + ".\n\n");
+        this.hasErrors = true;
     }
-
+    
+    public boolean hasErrors() {
+        return this.hasErrors;
+    }
+    
     public Type visit(Program n) {
         FunctionDeclarations allFunctions = n.fds;
         

@@ -7,4 +7,8 @@ package edu.unitec.intermediatelanguage;
  */
 public abstract class IntermediateForm {
      public OperationList operations;
+     
+     public IntermediateForm() {
+         this.operations = new OperationList();
+     }
 }
