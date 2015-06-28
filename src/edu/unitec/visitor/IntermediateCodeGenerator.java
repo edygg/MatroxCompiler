@@ -99,6 +99,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     private SemanticAnalysis semanticTable;
     private static final String GLOBAL_SCOPE = "s0";
     private List<String> stringsTable;
+    private FunctionDeclaration currentFunction;
 
     public IntermediateCodeGenerator(File outputFile, SemanticAnalysis semanticTable) throws IOException {
         this.out = new BufferedWriter(new FileWriter(outputFile));
@@ -143,6 +144,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     }
 
     public IntermediateForm visit(FunctionDeclaration n) {
+        this.currentFunction = n;
         IntermediateStatement ret = new IntermediateStatement();
         ret.operations.add(new Operation(new Label(n.i.toString())));
 
@@ -417,7 +419,11 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         IntermediateStatement ret = new IntermediateStatement();
         
         IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
-        ret.operations.add(new Operation("RET", exp.getPlace().toString(), "", Operation.Operations.ASSIGN));
+        if (currentFunction.i.toString().equals("main")) {
+            ret.operations.add(new Operation("", "EXIT", "", Operation.Operations.EXIT));
+        } else {
+            ret.operations.add(new Operation("RET", exp.getPlace().toString(), "", Operation.Operations.ASSIGN));
+        }
         
         return ret;
     }

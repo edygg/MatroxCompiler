@@ -3,9 +3,13 @@ function integer main[]
 	integer num1 <- 1;
 	integer num2 <- 2;
 	integer ans <- 0;
+	character char <- \c\;
 
-	ans <- num1 / num2;
+	print char;
+	print "\n";
+	print "Esto es una c jajaja\n";
 
+	ans <- (num1 + 1) + (num2 + ans);
 
 	give_back 0;
 end

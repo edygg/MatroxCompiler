@@ -49,12 +49,37 @@ public class SemanticAnalysis {
         return null;
     }
     
+    public SemanticTableNode findID(String id) {
+        for (int i = 0; i < symbols.size(); i++) {
+            SemanticTableNode currentSymbolInfo = symbols.get(i);
+            if (currentSymbolInfo.getName().equals(id)) {
+                return currentSymbolInfo;
+            }
+        }
+        
+        return null;
+    }
+    
     public boolean addID(String id, String scope, SemanticTableNode value) {
         if (findID(id, scope) != null)
             return false;
         
         this.symbols.add(value);
         return true;
+    }
+    
+    public List<SemanticVariableTableNode> getAllVariables(String scope) {
+        List<SemanticVariableTableNode> ret = new ArrayList();
+        
+        for (int i = 0; i < symbols.size(); i++) {
+            SemanticTableNode currentSymbolInfo = symbols.get(i);
+            if (currentSymbolInfo instanceof SemanticVariableTableNode) {
+                if (((SemanticVariableTableNode) currentSymbolInfo).getScope().startsWith(scope))
+                    ret.add((SemanticVariableTableNode) currentSymbolInfo);
+            }
+        }
+        
+        return ret;
     }
 
 }

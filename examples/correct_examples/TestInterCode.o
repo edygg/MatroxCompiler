@@ -5,8 +5,18 @@ num2 := 2
 L1:
 ans := 0
 L2:
-t0 := num1 / num2
-ans := t0
+char := 'c'
 L3:
-RET := 0
+print char
 L4:
+print "\n"
+L5:
+print "Esto es una c jajaja\n"
+L6:
+t1 := num1 + 1
+t2 := num2 + ans
+t0 := t1 + t2
+ans := t0
+L7:
+EXIT
+L8:
