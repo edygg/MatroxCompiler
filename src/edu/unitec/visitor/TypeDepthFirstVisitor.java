@@ -175,13 +175,13 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
             errorComplain("Boolean expresson expected (while)", n.e.getLine(), n.e.getColumn());
             return new ErrorType();
         }
-
+        
+        String currentScope = Scope.genNewScope();
+        scope += currentScope;
         for (int i = 0; i < n.s.size(); i++) {
-            String currentScope = Scope.genNewScope();
-            scope += currentScope;
-            n.s.elementAt(i).accept(this);
-            scope = scope.replaceAll(currentScope, "");
+            n.s.elementAt(i).accept(this); 
         }
+        scope = scope.replaceAll(currentScope, "");
         return null;
     }
 
@@ -236,41 +236,49 @@ public class TypeDepthFirstVisitor implements TypeVisitor {
         Vector cases = new Vector();
         for (int i = 0; i < n.scs.size(); i++) {
             SwitchCaseStatement currentSetCase = n.scs.elementAt(i);
-            for (int j = 0; j < currentSetCase.scel.size(); j++) {
-                Exp currentCase = currentSetCase.scel.elementAt(j);
-                Type currentCaseType = currentCase.accept(this);
-                //Tiene que ser Literal y del mismo tipo
-                if (currentCase instanceof IntegerLiteral || currentCase instanceof CharLiteral) {
-                    Type expType = n.e.accept(this);
-                    if (!(expType.equals(currentCaseType))) {
-                        errorComplain("Case option must be same type as switch.", n.e.getLine(), n.e.getColumn());
-                    }
-                    
-                    if (currentCase instanceof IntegerLiteral) {
-                        if (cases.contains(((IntegerLiteral) currentCase).i)) {
-                            errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
-                        } else {
-                            cases.add(((IntegerLiteral) currentCase).i);
+            
+            if (currentSetCase.scel != null) { 
+                for (int j = 0; j < currentSetCase.scel.size(); j++) {
+                    Exp currentCase = currentSetCase.scel.elementAt(j);
+                    Type currentCaseType = currentCase.accept(this);
+                    //Tiene que ser Literal y del mismo tipo
+                    if (currentCase instanceof IntegerLiteral || currentCase instanceof CharLiteral) {
+                        Type expType = n.e.accept(this);
+                        if (!(expType.equals(currentCaseType))) {
+                            errorComplain("Case option must be same type as switch.", n.e.getLine(), n.e.getColumn());
                         }
+
+                        if (currentCase instanceof IntegerLiteral) {
+                            if (cases.contains(((IntegerLiteral) currentCase).i)) {
+                                errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
+                            } else {
+                                cases.add(((IntegerLiteral) currentCase).i);
+                            }
+                        } else {
+                            if (cases.contains(((CharLiteral) currentCase).i)) {
+                                errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
+                            } else {
+                                cases.add(((CharLiteral) currentCase).i);
+                            }
+                        }
+
                     } else {
-                        if (cases.contains(((CharLiteral) currentCase).i)) {
-                            errorComplain("Case option is already defined.", currentCase.getLine(), currentCase.getColumn());
-                        } else {
-                            cases.add(((CharLiteral) currentCase).i);
-                        }
+                        errorComplain("Integer or character literal expected.", currentCase.getLine(), currentCase.getColumn());
                     }
-                    
-                } else {
-                    errorComplain("Integer or character literal expected.", currentCase.getLine(), currentCase.getColumn());
+                }
+            } else { // Es by_default
+                if (!(i == n.scs.size() - 1)) {
+                    errorComplain("by_default case is not the last one.", n.getLine(), n.getColumn());
+                    return new ErrorType();
                 }
             }
             
+            String currentScope = Scope.genNewScope();
+            scope += currentScope;
             for (int j = 0; j < currentSetCase.s.size(); j++) {
-                String currentScope = Scope.genNewScope();
-                scope += currentScope;
                 currentSetCase.s.elementAt(j).accept(this);
-                scope = scope.replaceAll(currentScope, "");
             }
+            scope = scope.replaceAll(currentScope, "");
         }
 
         return new NullType();

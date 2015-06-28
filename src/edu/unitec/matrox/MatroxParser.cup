@@ -397,7 +397,7 @@ switch_statement ::= SWITCH LPAR exp:e RPAR switch_case_statements:scstmts END  
 ;
 
 switch_case_statements ::= switch_case_statement:scstmt switch_case_statements:scstmts      {: scstmts.add( scstmt); RESULT = scstmts; :}
-                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); :}
+                        | switch_case_statement:scstmt                                      {: RESULT = new SwitchCaseStatements(); RESULT.add(scstmt); :}
 ;
 
 switch_case_statement ::= CASE switch_case_exp_list:scexpl statements:stmts END             {: RESULT = new SwitchCaseStatement(scexpl, stmts); :}

@@ -3,24 +3,34 @@ function integer main[]
 
 	get_value num;
 
-	if (num = 1)
-		print "UNO";
-	elseif (num = 2)
-		print "DOS";
-	elseif (num = 3)
-		print "TRES";
-	else
-		print "Adios";
+	switch (num)
+		
+		option 1
+			print "Hola";
+		end
+
+		option 2
+			print "Hola";
+		end
+
+		option 3
+			print "Hola";
+		end
+
+		option 4
+			print "Hola";
+		end
+
+		option 5
+			print "Hola";
+		end
+
+		option by_default
+			print "Hola";
+		end
+
 	end
 
-	print (1+2-3*4/5);
-
-	num <- 5;
-	while (num <> 1 and num = 2)
-		print num;
-		printMessage[num];
-		num <- 1;
-	end
 	give_back 0;
 end
 

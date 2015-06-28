@@ -83,6 +83,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Retention;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -96,10 +98,12 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     private IntermediateStatement program;
     private SemanticAnalysis semanticTable;
     private static final String GLOBAL_SCOPE = "s0";
+    private List<String> stringsTable;
 
     public IntermediateCodeGenerator(File outputFile, SemanticAnalysis semanticTable) throws IOException {
         this.out = new BufferedWriter(new FileWriter(outputFile));
         this.semanticTable = semanticTable;
+        stringsTable = new ArrayList();
     }
 
     public void complete(Vector<Label> list, Label label) {
@@ -113,6 +117,15 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         neoList.addAll(list1);
         neoList.addAll(list2);
         return neoList;
+    }
+
+    public List<String> getStringsTable() {
+        return stringsTable;
+    }
+    
+    public void creatFile(String content) throws IOException {
+        out.write(content);
+        out.close();
     }
 
     public IntermediateForm visit(Program n) {
@@ -290,15 +303,86 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     }
 
     public IntermediateForm visit(For n) {
-        return null;
+        IntermediateStatement ret = new IntermediateStatement();
+        IntermediateStatement forInit = (IntermediateStatement) n.fi.accept(this);
+        ret.operations = ret.operations.merge(forInit.operations);
+        Label forStart = new Label();
+        Label forBody = new Label();
+        Label incLabel = new Label();
+        ret.operations.add(new Operation(forStart));
+        IntermediateExpression exp = (IntermediateExpression) n.e1.accept(this);
+        ret.operations = ret.operations.merge(exp.operations);
+        complete(exp.getTrue(), forBody);
+        ret.setNext(exp.getFalse());
+        ret.operations.add(new Operation(forBody));
+        IntermediateStatement stmts = (IntermediateStatement) this.visit(n.s);
+        ret.operations = ret.operations.merge(stmts.operations);
+        ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, incLabel));
+        ret.operations.add(new Operation(incLabel));
+        if (n.e2 != null) {
+            IntermediateExpression incExp = (IntermediateExpression) n.e2.accept(this);
+            ret.operations = ret.operations.merge(incExp.operations);
+        } else {
+            IntermediateStatement incExp = (IntermediateStatement) n.vd.accept(this);
+            ret.operations = ret.operations.merge(incExp.operations);
+        }
+        
+        ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, forStart));
+        
+        return ret;
     }
 
     public IntermediateForm visit(ForInit n) {
-        return null;
+        if (n.vd != null) {
+            return n.vd.accept(this);
+        } else {
+            return n.vdn.accept(this);
+        }
     }
 
     public IntermediateForm visit(SwitchStatement n) {
-        return null;
+        IntermediateExpression ret = new IntermediateExpression();
+        
+        IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
+        Vector<Label> trueLabels = new Vector();
+        Label falseLabel = new Label();
+        Label jumpOut = new Label("");
+        Vector<Label> outerList = new Vector();
+        outerList.add(jumpOut);
+        boolean hasByDefault = false;
+        for (int i = 0; i < n.scs.size(); i++) {
+            SwitchCaseStatement currentCaseStatement = n.scs.elementAt(i);
+            Label trueLabel = new Label();
+            trueLabels.add(trueLabel);
+            if (currentCaseStatement.scel != null) {
+                for (int j = 0; j < currentCaseStatement.scel.size(); j++) {
+                    IntermediateExpression currentOption = (IntermediateExpression) currentCaseStatement.scel.elementAt(j).accept(this);
+                    ret.operations.add(new Operation("", exp.getPlace().toString(), currentOption.getPlace().toString(), Operation.Operations.IF_EQ, trueLabel));
+                    ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, falseLabel));
+                    ret.operations.add(new Operation(falseLabel));
+                    falseLabel = new Label();
+                }
+            } else { // option by_default
+                hasByDefault = true;
+                trueLabels.add(falseLabel);
+                ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, falseLabel));
+            }
+        }
+        if (!hasByDefault) {
+            ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, jumpOut));
+        }
+        
+        for (int i = 0; i < n.scs.size(); i++) {
+            SwitchCaseStatement currentCaseStatement = n.scs.elementAt(i);
+            ret.operations.add(new Operation(trueLabels.get(i)));
+            IntermediateStatement stmts = (IntermediateStatement) this.visit(currentCaseStatement.s);
+            ret.operations = ret.operations.merge(stmts.operations);
+            ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, jumpOut));
+        }
+        
+        ret.setNext(outerList);
+        
+        return ret;
     }
 
     public IntermediateForm visit(SwitchCaseStatement n) {
@@ -503,6 +587,9 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         ret.setPlace(new Temp("\"" + n.i + "\""));
         
         //Guardar en una tabla de Strings
+        if (!stringsTable.contains(n.i))
+            stringsTable.add(n.i);
+        
         return ret;
     }
 
@@ -868,7 +955,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         Label nextLabel = new Label("");
         ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, nextLabel));
         ret.getTrue().add(nextLabel);
-
+        ret.setPlace(new Temp(Integer.toString(1)));
         return ret;
     }
 
@@ -878,7 +965,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         Label nextLabel = new Label("");
         ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, nextLabel));
         ret.getFalse().add(nextLabel);
-
+        ret.setPlace(new Temp(Integer.toString(0)));
         return ret;
     }
 

@@ -38,7 +38,7 @@ public class Main {
                 File interOut = new File(file.getAbsolutePath().replace(".mtx", "")  + ".o");
                 IntermediateCodeGenerator icg = new IntermediateCodeGenerator(interOut, semanticTable);
                 IntermediateStatement interForm = (IntermediateStatement) icg.visit(generatedProgram);
-                System.out.println(interForm.buildIntermediateCode());
+                icg.creatFile(interForm.buildIntermediateCode());
             }
             
         } catch (FileNotFoundException ex) {

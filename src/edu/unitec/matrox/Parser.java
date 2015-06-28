@@ -1805,7 +1805,7 @@ class CUP$Parser$actions {
 		int scstmtleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int scstmtright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		SwitchCaseStatement scstmt = (SwitchCaseStatement)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new SwitchCaseStatements(); 
+		 RESULT = new SwitchCaseStatements(); RESULT.add(scstmt); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("switch_case_statements",10, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

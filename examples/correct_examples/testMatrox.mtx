@@ -1,0 +1,114 @@
+# Comprobacion de Tipos | Example #
+
+
+function integer main[]
+	
+	integer op_i <-0 , user<-0;
+	number a<-0, b<-0;
+	string text<-"Hola Mundo";
+	character op_c;
+	# boolean flag <- true; #
+
+	# print("******* MENU *******"); #
+	print("1. if, if else");
+	print("2. if else if else");
+	print("3. while");
+	print("4. for");
+	print("5. function declaration | function call");
+	print("Ingrese su opcion: ");
+	get_value op_i;
+
+	switch(op_i)
+
+		option 1
+
+			if(true)
+				print("Flag equals True");
+			else 
+				print("Flag equals False");
+			end
+
+			if(true)
+				print("Flag equals True");
+			else 
+				print("Flag equals False");
+			end	
+
+		end
+
+		option 2
+
+			if(op_i = 2)
+				print("op 2");
+			elseif(op_i <= 3)
+				print("op menor o igual 3");
+			elseif(op_i >= 3)
+				print("op mayor o igual 3");
+			else
+				print("Un numero");
+			end
+
+		end
+
+		option 3
+
+			integer c <- 0;
+			while(op_i = c)
+				if(true)
+					print("Flag es true");
+					Impresion[];
+				end
+				c++;
+			end
+
+		end
+
+		option 4
+
+			for(integer i<-0; i<10; i<-i+1)
+				for(integer j<-0, k<-0; j<=15; j<-j+1)
+					Impresion[];
+				end
+			end
+
+		end
+
+		option 5
+
+			print("Ingrese el largo: ");
+			get_value a;
+			print("Ingrese el ancho: ");
+			get_value b;
+			print(Perimetro[a,b]);
+
+			print("Ingrese el largo: ");
+			get_value a;
+			print("Ingrese el ancho: ");
+			get_value b;
+			print(Area[a,b]);
+
+		end
+
+		option by_default
+			print("Opcion no valida");
+		end
+
+	end 
+
+	give_back 0;
+
+end 
+
+function number Perimetro [number x, number y]
+	number P <- x + y; 
+	give_back P;
+end
+
+function number Area [number x, number y]
+	number A <- x * y; 
+	give_back A;
+end
+
+function void Impresion[]
+	print("Solo imprimo..");
+end
