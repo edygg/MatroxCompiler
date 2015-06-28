@@ -3,9 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/visitor/IntermediateCodeGenerator.java</file>
-            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/Label.java</file>
             <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/OperationList.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/Label.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/Temp.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/Operation.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/visitor/IntermediateCodeGenerator.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/intermediatelanguage/IntermediateStatement.java</file>
+            <file>file:/C:/Users/Edilson%20Gonzalez/Documents/NetBeansProjects/MatroxCompiler/src/edu/unitec/matrox/Main.java</file>
         </group>
     </open-files>
 </project-private>

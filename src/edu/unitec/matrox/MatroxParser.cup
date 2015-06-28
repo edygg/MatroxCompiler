@@ -415,8 +415,8 @@ if_statement ::= IF LPAR exp:e RPAR statements:stmts END                        
                 | error END
 ;
 
-else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.add( eistmt);  :}
-                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); :}
+else_if_statements ::= else_if_statement:eistmt else_if_statements:eistmts                  {: eistmts.add( eistmt);  RESULT = eistmts; :}
+                    | else_if_statement:eistmt                                              {: RESULT = new ElseIfStatements(); RESULT.add(eistmt); :}
 ;
  
 else_if_statement ::= ELSEIF LPAR exp:e RPAR statements:stmts                               {: RESULT = new ElseIfStatement(e, stmts); RESULT.setLine(stmtsleft); RESULT.setColumn(stmtsright); RESULT.setLine(eleft); RESULT.setColumn(eright); :}

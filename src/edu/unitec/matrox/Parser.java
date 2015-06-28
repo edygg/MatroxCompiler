@@ -1955,7 +1955,7 @@ class CUP$Parser$actions {
 		int eistmtsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eistmtsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		ElseIfStatements eistmts = (ElseIfStatements)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 eistmts.add( eistmt);  
+		 eistmts.add( eistmt);  RESULT = eistmts; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_if_statements",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1967,7 +1967,7 @@ class CUP$Parser$actions {
 		int eistmtleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eistmtright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		ElseIfStatement eistmt = (ElseIfStatement)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = new ElseIfStatements(); 
+		 RESULT = new ElseIfStatements(); RESULT.add(eistmt); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_if_statements",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

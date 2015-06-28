@@ -7,7 +7,7 @@ import java.util.Vector;
  *
  * @author Edilson Gonzalez
  */
-public class IntermediateExpression extends IntermediateForm {
+public class IntermediateExpression extends IntermediateStatement {
     private Temp place;
     private Vector<Label> t;
     private Vector<Label> f;

@@ -123,6 +123,8 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
             IntermediateForm current = n.fds.elementAt(i).accept(this);
             allCode.operations = allCode.operations.merge(current.operations);
         }
+        
+        //allCode.operations.add(new Operation("", "EXIT", "", Operation.Operations.EXIT));
 
         return allCode;
     }
@@ -186,9 +188,81 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
             ret.setNext(merge(exp.getFalse(), trueStatements.getNext()));
 
             return ret;
+        } else if (n.s1 != null && n.s2 != null && n.eis == null) { // If else
+            IntermediateStatement ret = new IntermediateStatement();
+            
+            OperationList tmp = new OperationList();
+            IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
+            Label trueLabel = new Label();
+            Label falseLabel = new Label();
+            Label jumpLabel = new Label("");
+            Vector<Label> jumpList = new Vector();
+            jumpList.add(jumpLabel);
+            
+            complete(exp.getTrue(), trueLabel);
+            tmp = tmp.merge(exp.operations);
+            tmp.add(new Operation(trueLabel));
+            
+            IntermediateStatement trueStatements = (IntermediateStatement) this.visit(n.s1);
+            tmp = tmp.merge(trueStatements.operations);
+            tmp.add(new Operation("", "", "", Operation.Operations.GOTO, jumpLabel));
+            
+            complete(exp.getFalse(), falseLabel);
+            tmp.add(new Operation(falseLabel));
+            IntermediateStatement falseStatements = (IntermediateStatement) this.visit(n.s2);
+            tmp = tmp.merge(falseStatements.operations);
+            
+            
+            ret.operations = tmp;
+            ret.setNext(merge(trueStatements.getNext(), merge(jumpList, falseStatements.getNext())));
+            return ret;
+        } else { // if con elsif
+            IntermediateStatement ret = new IntermediateStatement();
+            OperationList tmp = new OperationList();
+            IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
+            
+            Label trueLabel = new Label();
+            Label falseLabel = new Label();
+            Label jumpLabel = new Label("");
+            Vector<Label> outerList = new Vector();
+            outerList.add(jumpLabel);
+            
+            complete(exp.getTrue(), trueLabel);
+            complete(exp.getFalse(), falseLabel);
+            tmp = tmp.merge(exp.operations);
+            tmp.add(new Operation(trueLabel));
+            
+            IntermediateStatement trueStatements = (IntermediateStatement) this.visit(n.s1);
+            tmp = tmp.merge(trueStatements.operations);
+            tmp.add(new Operation("", "", "", Operation.Operations.GOTO, jumpLabel));
+            
+            for (int i = 0; i < n.eis.size(); i++) {
+                trueLabel = new Label();
+                ElseIfStatement currentStmt = n.eis.elementAt(i);
+                IntermediateExpression cExp = (IntermediateExpression) currentStmt.e.accept(this);
+                complete(cExp.getTrue(), trueLabel);
+                
+                tmp.add(new Operation(falseLabel));
+                tmp = tmp.merge(cExp.operations);
+                tmp.add(new Operation(trueLabel));
+                IntermediateStatement trueStmts = (IntermediateStatement) this.visit(currentStmt.s);
+                tmp = tmp.merge(trueStmts.operations);
+                tmp.add(new Operation("", "", "", Operation.Operations.GOTO, jumpLabel));
+                
+                falseLabel = new Label();
+                complete(cExp.getFalse(), falseLabel);
+            }
+            
+            tmp.add(new Operation(falseLabel));
+            
+            if (n.s2 != null) {
+                IntermediateStatement falseStatements = (IntermediateStatement) this.visit(n.s2);
+                tmp = tmp.merge(falseStatements.operations);
+            } 
+            ret.operations = tmp;
+            ret.setNext(outerList);
+            return ret;
         }
-
-        return null;
     }
 
     public IntermediateForm visit(ElseIfStatement n) {
@@ -196,7 +270,23 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     }
 
     public IntermediateForm visit(While n) {
-        return null;
+        IntermediateStatement ret = new IntermediateStatement();
+        IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
+        Label trueLabel = new Label();
+        Label whileLabel = new Label();
+        ret.operations.add(new Operation(whileLabel));
+        ret.operations = ret.operations.merge(exp.operations);
+        ret.operations.add(new Operation(trueLabel));
+        
+        IntermediateStatement stms = (IntermediateStatement) this.visit(n.s);
+        ret.operations = ret.operations.merge(stms.operations);
+        ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, whileLabel));
+        
+        complete(exp.getTrue(), trueLabel);
+        
+        ret.setNext(exp.getFalse());
+        
+        return ret;
     }
 
     public IntermediateForm visit(For n) {
@@ -216,11 +306,27 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     }
 
     public IntermediateForm visit(VariableDeclaration n) {
-        return null;
+        IntermediateStatement ret = new IntermediateStatement();
+        
+        if (n.vds != null) {
+            for (int i = 0; i < n.vds.size(); i++) {
+                IntermediateStatement cur = (IntermediateStatement) n.vds.elementAt(i).accept(this);
+                ret.operations = ret.operations.merge(cur.operations);
+            }
+        }
+        
+        return ret;
     }
 
     public IntermediateForm visit(VariableDeclarator n) {
-        return null;
+        IntermediateStatement ret = new IntermediateStatement();
+        
+        IntermediateExpression exp1 = (IntermediateExpression) n.i.accept(this);
+        IntermediateExpression exp2 = (IntermediateExpression) n.e.accept(this);
+        
+        ret.operations = ret.operations.merge(exp2.operations);
+        ret.operations.add(new Operation(exp1.getPlace().toString(), exp2.getPlace().toString(), "", Operation.Operations.ASSIGN));
+        return ret;
     }
 
     public IntermediateForm visit(Return n) {
@@ -355,6 +461,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         OperationList tmp = new OperationList();
         tmp = tmp.merge(args.operations);
         tmp.add(new Operation("", n.i.toString(), Integer.toString(n.as.size()), Operation.Operations.CALL));
+        ret.operations = tmp;
         SemanticFunctionTableNode functionInfo = (SemanticFunctionTableNode) semanticTable.findID(n.i.toString(), GLOBAL_SCOPE);
         
         if (functionInfo.getReturnType() != null) {
@@ -828,11 +935,23 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     }
 
     public IntermediateForm visit(Arguments n) {
-        return null;
+        IntermediateExpression ret = new IntermediateExpression();
+        for (int i = 0; i < n.size(); i++) {
+            IntermediateExpression cur = (IntermediateExpression) n.elementAt(i).accept(this);
+            ret.operations = ret.operations.merge(cur.operations);
+        }
+        
+        return ret;
     }
 
     public IntermediateForm visit(Argument n) {
-        return null;
+        IntermediateExpression ret = new IntermediateExpression();
+        IntermediateExpression exp = (IntermediateExpression) n.e.accept(this);
+        
+        ret.operations = ret.operations.merge(exp.operations);
+        ret.operations.add(new Operation("", exp.getPlace().toString(), "", Operation.Operations.PARAM));
+        
+        return ret;
     }
 
     public IntermediateForm visit(ElseIfStatements n) {

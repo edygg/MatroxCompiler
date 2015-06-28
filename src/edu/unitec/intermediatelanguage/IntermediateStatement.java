@@ -102,6 +102,7 @@ public class IntermediateStatement extends IntermediateForm {
                     break;
                 }
                 case EXIT: {
+                    sb.append(currentOp.getOp1());
                     break;
                 }
                 case VOID_RET: {

@@ -1,15 +1,29 @@
 function integer main[]
-	integer num <- 0;
+	integer num <- 1;
 
 	get_value num;
 
-	if ((num = (2 * 2) and num = 3) or num = 5)
-		print "Hola";
+	if (num = 1)
+		print "UNO";
+	elseif (num = 2)
+		print "DOS";
+	elseif (num = 3)
+		print "TRES";
+	else
+		print "Adios";
 	end
+
 	print (1+2-3*4/5);
+
+	num <- 5;
+	while (num <> 1 and num = 2)
+		print num;
+		printMessage[num];
+		num <- 1;
+	end
 	give_back 0;
 end
 
-function void printMessage[string text]
+function void printMessage[integer text]
 	print text;
 end
