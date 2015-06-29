@@ -42,8 +42,8 @@ public class Main {
                 
                 
                 File interOut2 = new File(file.getAbsolutePath().replace(".mtx", "")  + ".s");
-                FinalCodeBuilder fcb = new FinalCodeBuilder(semanticTable, interOut2 ,interForm, icg.getStringsTable());
-                System.out.println(fcb.buildFinalCode());
+                FinalCodeBuilder fcb = new FinalCodeBuilder(semanticTable, interOut2 ,interForm, icg.getStringsTable(), icg.getDoublesTable());
+                fcb.writeFinalCode(fcb.buildFinalCode());
             }
             
         } catch (FileNotFoundException ex) {

@@ -99,12 +99,14 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
     private SemanticAnalysis semanticTable;
     private static final String GLOBAL_SCOPE = "s0";
     private List<String> stringsTable;
+    private List<Double> doublesTable;
     private FunctionDeclaration currentFunction;
 
     public IntermediateCodeGenerator(File outputFile, SemanticAnalysis semanticTable) throws IOException {
         this.out = new BufferedWriter(new FileWriter(outputFile));
         this.semanticTable = semanticTable;
         stringsTable = new ArrayList();
+        doublesTable = new ArrayList();
     }
 
     public void complete(Vector<Label> list, Label label) {
@@ -124,8 +126,13 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         return stringsTable;
     }
     
+    public List<Double> getDoublesTable() {
+        return doublesTable;
+    }
+    
     public void creatFile(String content) throws IOException {
         out.write(content);
+        out.flush();
         out.close();
     }
 
@@ -366,8 +373,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
                 }
             } else { // option by_default
                 hasByDefault = true;
-                trueLabels.add(falseLabel);
-                ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, falseLabel));
+                ret.operations.add(new Operation("", "", "", Operation.Operations.GOTO, trueLabel));
             }
         }
         if (!hasByDefault) {
@@ -584,6 +590,7 @@ public class IntermediateCodeGenerator implements IntermediateVisitor {
         
         ret.setPlace(new Temp(Double.toString(n.i)));
         
+        doublesTable.add(n.i);
         return ret;
     }
 

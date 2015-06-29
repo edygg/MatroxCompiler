@@ -1,22 +1,10 @@
 main:
-num1 := 1
+num1 := 'C'
+num2 := 'D'
 L0:
-num2 := 2
+num1 := num2
 L1:
-ans := 0
+print num1
 L2:
-char := 'c'
-L3:
-print char
-L4:
-print "\n"
-L5:
-print "Esto es una c jajaja\n"
-L6:
-t1 := num1 + 1
-t2 := num2 + ans
-t0 := t1 + t2
-ans := t0
-L7:
 EXIT
-L8:
+L3:

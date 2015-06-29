@@ -1,15 +1,10 @@
 function integer main[]
+	
+	character num1 <- \C\, num2 <-\D\ ;
 
-	integer num1 <- 1;
-	integer num2 <- 2;
-	integer ans <- 0;
-	character char <- \c\;
+	num1 <- num2;
 
-	print char;
-	print "\n";
-	print "Esto es una c jajaja\n";
-
-	ans <- (num1 + 1) + (num2 + ans);
+	print num1;
 
 	give_back 0;
 end
