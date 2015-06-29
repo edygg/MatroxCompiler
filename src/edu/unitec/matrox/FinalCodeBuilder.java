@@ -315,7 +315,96 @@ public class FinalCodeBuilder {
                     break;
                 }
                 case MIN: {
+                    String t3 = null;
+                    OperationType type = null;
 
+                    String t1 = null;
+                    if (finalTemps.get(currentOp.getOp1()) != null) {
+                        t1 = finalTemps.get(currentOp.getOp1()).reg;
+                        type = finalTemps.get(currentOp.getOp1()).type;
+                    } else {
+                        if (currentOp.getOp1().matches("[0-9]+")) { // es integer
+                            t1 = getAvaliableTemp();
+                            sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
+                            type = OperationType.INTEGER_OPERATION;
+                        } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp1())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else { // es identificador
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp1());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t1 = getAvaliableTemp();
+                                sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    String t2 = null;
+                    if (finalTemps.get(currentOp.getOp2()) != null) {
+                        t2 = finalTemps.get(currentOp.getOp2()).reg;
+                        type = finalTemps.get(currentOp.getOp2()).type;
+                    } else {
+                        if (currentOp.getOp2().matches("[0-9]+")) { // es integer
+                            t2 = getAvaliableTemp();
+                            sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
+                        } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp2())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else {
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp2());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t2 = getAvaliableTemp();
+                                sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    if (type == OperationType.INTEGER_OPERATION) {
+                        t3 = getAvaliableTemp();
+                        sbText.append("sub " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("sw " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    } else {
+                        t3 = getAvaliableDoubleTemp();
+                        sbText.append("sub.d " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("s.d " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    }
+
+                    setAvaliableTemp(t1);
+                    setAvaliableTemp(t2);
                     break;
                 }
                 case UMIN: {
@@ -323,11 +412,189 @@ public class FinalCodeBuilder {
                     break;
                 }
                 case MUL: {
+                    String t3 = null;
+                    OperationType type = null;
 
+                    String t1 = null;
+                    if (finalTemps.get(currentOp.getOp1()) != null) {
+                        t1 = finalTemps.get(currentOp.getOp1()).reg;
+                        type = finalTemps.get(currentOp.getOp1()).type;
+                    } else {
+                        if (currentOp.getOp1().matches("[0-9]+")) { // es integer
+                            t1 = getAvaliableTemp();
+                            sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
+                            type = OperationType.INTEGER_OPERATION;
+                        } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp1())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else { // es identificador
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp1());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t1 = getAvaliableTemp();
+                                sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    String t2 = null;
+                    if (finalTemps.get(currentOp.getOp2()) != null) {
+                        t2 = finalTemps.get(currentOp.getOp2()).reg;
+                        type = finalTemps.get(currentOp.getOp2()).type;
+                    } else {
+                        if (currentOp.getOp2().matches("[0-9]+")) { // es integer
+                            t2 = getAvaliableTemp();
+                            sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
+                        } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp2())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else {
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp2());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t2 = getAvaliableTemp();
+                                sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    if (type == OperationType.INTEGER_OPERATION) {
+                        t3 = getAvaliableTemp();
+                        sbText.append("mul " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("sw " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    } else {
+                        t3 = getAvaliableDoubleTemp();
+                        sbText.append("mul.d " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("s.d " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    }
+
+                    setAvaliableTemp(t1);
+                    setAvaliableTemp(t2);
                     break;
                 }
                 case DIV: {
+                    String t3 = null;
+                    OperationType type = null;
 
+                    String t1 = null;
+                    if (finalTemps.get(currentOp.getOp1()) != null) {
+                        t1 = finalTemps.get(currentOp.getOp1()).reg;
+                        type = finalTemps.get(currentOp.getOp1()).type;
+                    } else {
+                        if (currentOp.getOp1().matches("[0-9]+")) { // es integer
+                            t1 = getAvaliableTemp();
+                            sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
+                            type = OperationType.INTEGER_OPERATION;
+                        } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp1())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else { // es identificador
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp1());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t1 = getAvaliableTemp();
+                                sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    String t2 = null;
+                    if (finalTemps.get(currentOp.getOp2()) != null) {
+                        t2 = finalTemps.get(currentOp.getOp2()).reg;
+                        type = finalTemps.get(currentOp.getOp2()).type;
+                    } else {
+                        if (currentOp.getOp2().matches("[0-9]+")) { // es integer
+                            t2 = getAvaliableTemp();
+                            sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
+                        } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", double" + doublesTable.indexOf(new Double(currentOp.getOp2())) + "\n");
+                            type = OperationType.DOUBLE_OPERATION;
+                        } else {
+                            SemanticVariableTableNode varInfo = (SemanticVariableTableNode) semanticTable.findID(currentOp.getOp2());
+                            if (varInfo.getType().equals(new IntegerType())) {
+                                t2 = getAvaliableTemp();
+                                sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.INTEGER_OPERATION;
+                            } else {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
+                                type = OperationType.DOUBLE_OPERATION;
+                            }
+                        }
+                    }
+
+                    if (type == OperationType.INTEGER_OPERATION) {
+                        t3 = getAvaliableTemp();
+                        sbText.append("div " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("sw " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    } else {
+                        t3 = getAvaliableDoubleTemp();
+                        sbText.append("div.d " + t3 + ", " + t1 + ", " + t2 + "\n");
+                        if (semanticTable.findID(currentOp.getStore()) != null) {
+                            sbText.append("s.d " + t3 + ", " + currentOp.getStore() + "\n");
+                            setAvaliableTemp(t3);
+                        } else {
+                            finalTemps.put(currentOp.getStore(), new Info(t3, type));
+                            if (finalTemps.get(currentOp.getOp1()) != null) {
+                                finalTemps.remove(currentOp.getOp1());
+                            }
+                            if (finalTemps.get(currentOp.getOp2()) != null) {
+                                finalTemps.remove(currentOp.getOp2());
+                            }
+                        }
+                    }
+
+                    setAvaliableTemp(t1);
+                    setAvaliableTemp(t2);
                     break;
                 }
                 case IF_GEQ: {
@@ -344,6 +611,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp1().matches("[\\'][\\w\\W][\\']")) {
                             t1 = getAvaliableTemp();
@@ -356,6 +625,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t1 = getAvaliableTemp();
@@ -376,6 +647,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp2().matches("[\\'][\\w\\W][\\']")) {
                             t2 = getAvaliableTemp();
@@ -388,6 +661,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t2 = getAvaliableTemp();
@@ -399,7 +674,12 @@ public class FinalCodeBuilder {
                         }
                     }
                     
-                    sbText.append("bge " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    if (type == OperationType.DOUBLE_OPERATION) {
+                        sbText.append("c.le.d " + t2 + ", " + t1 + currentOp.getLabel().toString() + "\n");
+                    } else {
+                        sbText.append("bge " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    }
+                    
                     setAvaliableTemp(t1);
                     setAvaliableTemp(t2);
                     break;
@@ -418,6 +698,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp1().matches("[\\'][\\w\\W][\\']")) {
                             t1 = getAvaliableTemp();
@@ -430,6 +712,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t1 = getAvaliableTemp();
@@ -450,6 +734,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp2().matches("[\\'][\\w\\W][\\']")) {
                             t2 = getAvaliableTemp();
@@ -462,6 +748,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t2 = getAvaliableTemp();
@@ -472,8 +760,11 @@ public class FinalCodeBuilder {
                             }
                         }
                     }
-                    
-                    sbText.append("ble " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    if (type == OperationType.DOUBLE_OPERATION) {
+                        sbText.append("c.le.d " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    } else  {
+                        sbText.append("ble " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    }
                     setAvaliableTemp(t1);
                     setAvaliableTemp(t2);
                     break;
@@ -492,6 +783,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp1().matches("[\\'][\\w\\W][\\']")) {
                             t1 = getAvaliableTemp();
@@ -504,6 +797,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t1 = getAvaliableTemp();
@@ -524,6 +819,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp2().matches("[\\'][\\w\\W][\\']")) {
                             t2 = getAvaliableTemp();
@@ -536,6 +833,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t2 = getAvaliableTemp();
@@ -547,7 +846,12 @@ public class FinalCodeBuilder {
                         }
                     }
                     
-                    sbText.append("bgt " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    if (type == OperationType.DOUBLE_OPERATION) {
+                        sbText.append("c.lt.d " + t2 + ", " + t1 + ", " + currentOp.getLabel().toString() + "\n");
+                    } else {
+                        sbText.append("bgt " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    }
+                    
                     setAvaliableTemp(t1);
                     setAvaliableTemp(t2);
                     break;
@@ -566,6 +870,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp1().matches("[\\'][\\w\\W][\\']")) {
                             t1 = getAvaliableTemp();
@@ -578,6 +884,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t1 = getAvaliableTemp();
@@ -598,6 +906,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp2().matches("[\\'][\\w\\W][\\']")) {
                             t2 = getAvaliableTemp();
@@ -610,6 +920,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t2 = getAvaliableTemp();
@@ -621,7 +933,12 @@ public class FinalCodeBuilder {
                         }
                     }
                     
-                    sbText.append("blt " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    if (type == OperationType.DOUBLE_OPERATION) {
+                        sbText.append("c.lt.d " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    } else {
+                        sbText.append("blt " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    }
+                    
                     setAvaliableTemp(t1);
                     setAvaliableTemp(t2);
                     break;
@@ -640,6 +957,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp1().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t1 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp1().matches("[\\'][\\w\\W][\\']")) {
                             t1 = getAvaliableTemp();
@@ -652,6 +971,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t1 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t1 + ", " + currentOp.getOp1() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t1 = getAvaliableTemp();
@@ -672,6 +993,8 @@ public class FinalCodeBuilder {
                             sbText.append("li " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.INTEGER_OPERATION;
                         } else if (currentOp.getOp2().matches("[0-9]*[\\.][0-9]+")) { // es double
+                            t2 = getAvaliableDoubleTemp();
+                            sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                             type = OperationType.DOUBLE_OPERATION;
                         } else if (currentOp.getOp2().matches("[\\'][\\w\\W][\\']")) {
                             t2 = getAvaliableTemp();
@@ -684,6 +1007,8 @@ public class FinalCodeBuilder {
                                 sbText.append("lw " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.INTEGER_OPERATION;
                             } else if (varInfo.getType().equals(new DoubleType())) {
+                                t2 = getAvaliableDoubleTemp();
+                                sbText.append("l.d " + t2 + ", " + currentOp.getOp2() + "\n");
                                 type = OperationType.DOUBLE_OPERATION;
                             } else if (varInfo.getType().equals(new CharType())) {
                                 t2 = getAvaliableTemp();
@@ -694,8 +1019,8 @@ public class FinalCodeBuilder {
                             }
                         }
                     }
-                    
-                    sbText.append("bne " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
+                    if (!(type == OperationType.DOUBLE_OPERATION))
+                        sbText.append("bne " + t1 + ", " + t2 + ", " + currentOp.getLabel().toString() + "\n");
                     setAvaliableTemp(t1);
                     setAvaliableTemp(t2);
                     break;

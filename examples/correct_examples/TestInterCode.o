@@ -1,10 +1,23 @@
 main:
-num1 := 'C'
-num2 := 'D'
+int1 := 1
+int2 := 2
 L0:
-num1 := num2
+d1 := 1.0
+d2 := 2.0
 L1:
-print num1
+t2 := int1 + int2
+t3 := int1 - int2
+t1 := t2 * t3
+t4 := int1 - 2
+t0 := t1 / t4
+print t0
 L2:
-EXIT
+print "\n"
 L3:
+t7 := d1 + d2
+t8 := d1 - d2
+t6 := t7 * t8
+t9 := d1 - 2.9
+t5 := t6 / t9
+print t5
+L4:

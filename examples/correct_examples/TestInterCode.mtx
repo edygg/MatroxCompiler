@@ -1,10 +1,8 @@
 function integer main[]
-	
-	character num1 <- \C\, num2 <-\D\ ;
+	integer int1 <- 1, int2 <- 2;
+	number d1 <- 1.0, d2 <- 2.0;
 
-	num1 <- num2;
-
-	print num1;
-
-	give_back 0;
+	print (int1 + int2) * (int1 - int2) / (int1 - 2);
+	print "\n";
+	print (d1 + d2) * (d1 - d2) / (d1 - 2.9);
 end
